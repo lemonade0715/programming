@@ -1,3 +1,3 @@
 all:
-	gcc project.c func.c -o project
+	gcc main.c func.c -o main
 	@echo "Complete successfully.\n"
