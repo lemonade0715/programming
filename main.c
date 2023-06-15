@@ -55,7 +55,6 @@ int main()
         game_state = State_Production;
         
         current_player = (current_player + 1) % system_setting.player_num;
-        return 0;
     }
     
     return 0;
@@ -65,10 +64,8 @@ int production(Player *player_list, int player)
 {
     printf("當前玩家：玩家%d\n", player);
     // 擲骰子
-    srand(time(NULL));
-    int temp = (rand() % 6) + 2;
-    srand(time(NULL) + 1);
-    temp += rand() % 6;
+    int temp = arc4random_uniform(5) + 2;
+    temp += arc4random_uniform(5);
     // 印出擲骰資訊
     printf("骰子點數和：%d，", temp);
     
@@ -129,7 +126,6 @@ int robber(Player *player_list, int player)
     {
         robber_position_prev = (tiles[i].hasRobber) ? i : robber_position_prev;
     }
-    printf("%d", robber_position_prev);
     
     printf("請玩家%d移動強盜的位置。\n", player);
     if (player == 0) // 真人玩家
