@@ -97,3 +97,72 @@ void shuffleNumbers(int* array, int length) {
         array[j] = temp;
     }
 }
+
+// return 1 代表遊戲結束
+int refresh(Player player_list, System system_setting)
+{
+    // player total resource
+    for (int i = 0; i < system_setting.player_num; i++)
+    {
+        player_list[i].total_resource = 0;
+        for (int j = 0; j < 5; j++)
+        {
+            player_list[i].total_resource += player_list[i].resource[j];
+        }
+    }
+    
+    // TODO: Count road, village, city
+    
+    // TODO: Check longest road
+    
+    // Check max_knight
+    for (int i = 0; i < system_setting.player_num; i++)
+    {
+        int temp = 0;
+        for (int j = 0; j < 14; j++)
+        {
+            temp += (player_list[i].develop_cards[j]) ? 1 : 0;
+        }
+        // 根據遊戲規則，必須要超過才會易主
+        if (temp > system_setting.max_knight)
+        {
+            system_setting.max_knight = temp;
+            system_setting.mk_player = i;
+        }
+    }
+    
+    // TODO: others
+    
+    // Player score
+    for (int i = 0; i < system_setting.player_num; i++)
+    {
+        system_setting.player_score[i] = 0;
+        system_setting.player_score[i] += player_list[i].village;
+        system_setting.player_score[i] += 2 * player_list[i].city;
+        for (int j = 20; j < 25; j++)
+        {
+            system_setting.player_score[i] += player_list[i].develop_cards[j];
+        }
+        system_setting.player_score[i] += 2 * (system_setting.lr_player == i);
+        system_setting.player_score[i] += 2 * (system_setting.mk_player == i);
+        
+        if (system_setting.player_score[i] >= 10)
+        {
+            printf("\033[1m【遊戲結束】\033[0m\n");
+            for (int k = 0; k < system_setting.player_num; k++)
+            {
+                printf("玩家%d：%2d分\n", k, system_setting.player_score[k]);
+            }
+            printf("\033[1m恭喜玩家%d獲得勝利！\033[0m\n", i);
+            return 1;
+        }
+    }
+    return 0;
+}
+/*
+這個function的使用如下：
+if (refresh(player_list, system_setting))
+{
+    return 0;
+}
+*/

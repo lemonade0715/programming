@@ -11,27 +11,29 @@
 enum {WHEAT = 1, WOOD, WOOL, STONE, BRICK};
 
 struct  _player {
-    int32_t id;        // 可能不會用，應該會用player[3]的array處理
-    int32_t resource[6]; // not show to other players
+    int32_t resource[5]; // not show to other players
     int32_t total_resource; //show to other players
-    int32_t Is_use_develop_card; // one round use once
-    
-    int32_t NPC_difficulty; // user are 0, only for NPC
+    int32_t is_used_develop_card; // initalize to 0 each round
+    int road; // 玩家擁有的道路數量
+    int village; // 玩家擁有的村莊數量
+    int city; // 玩家擁有的城市數量
+    int develop_cards[25]; // 14+6+5，0:未擁有 1:未使用 2:已使用 (分數卡只有0,1)
+    int new_develop_card; // 當回合購買的發展卡，每回合初始化為-1
+    int32_t NPC_difficulty; // user is 0, only for NPC
 }__attribute__ ((__packed__));
 typedef struct _player Player;
 
 struct  _system {
     int32_t player_num;     // 3 or 4
-    int32_t knight_card;    // at most 14
-    int32_t score_card;     // at most 5
-    size_t bank_resource[6]; // all: 19, 19, 19, 19, 19. Can't be zero.
+    int bank_develop_card[25]; // 14+6+5，銀行的發展卡，0為已被購買，1為有庫存
+    size_t bank_resource[5]; // 各19個，發放時會扣除，記得檢查是否>0
     
     int32_t longest_road;   // num of longest road in total players
     int32_t lr_player;      // the player_id who has longest road card
     int32_t max_knight;     // num of max knight card in total players
     int32_t mk_player;      // the player_id who has max_num knight cards
     
-    int32_t player_score[4];
+    int32_t player_score[4]; // 如果只有三個玩家，第四項就保留為0
 }__attribute__ ((__packed__));
 typedef struct _system System;
 

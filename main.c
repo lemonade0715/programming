@@ -35,13 +35,21 @@ int main()
     printCatanTiles(tiles);
     
     int current_player = 0;
-        // 做一些初始化設定
+    // TODO: Some Initialization
     
     game_state = State_Production;
     current_player = 0;
     
     while (1)
     {
+        // TODO: Some Initialization
+        for (int i = 0; i < system_setting.player_num; i++)
+        {
+            player_list[i].is_used_develop_card = 0;
+            player_list[i].new_develop_card = -1;
+        }
+        //
+        
         printf("\033[1m【玩家%d - 收成階段】\033[0m\n", current_player);
         production(player_list, current_player);
         game_state = State_Trade;
@@ -104,13 +112,14 @@ int build(Player *player_list, int player)
 int robber(Player *player_list, int player)
 {
     // 檢查是否有人資源卡超過七張
+    printf("強盜來ㄌ！資源卡超過七張的人將被搶走一半的資源卡！\n");
     for (int i = 0; i < system_setting.player_num; i++)
     {
         while (player_list[i].total_resource > 7)
         {
             // 捨棄最多的資源卡，若最多的不止一個，則捨棄其中的第一個
-            int max_pos = 6;
-            for (int j = 5; j >= 0; j--)
+            int max_pos = 5;
+            for (int j = 4; j >= 0; j--)
             {
                 max_pos = (player_list[i].resource[j] > player_list[i].resource[max_pos]) ? j : max_pos;
             }
