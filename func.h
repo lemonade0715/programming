@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include <stdio.h>
 
+// 麥田x4、森林x4、草原x4、山脈x3、丘陵x3、沙漠x1
+#define NUM_TILES 19  // 板塊的總數量
+#define WIN_SCORE = 10;
+
 enum {WHEAT = 1, WOOD, WOOL, STONE, BRICK};
 
 struct  _player {
@@ -16,7 +20,6 @@ struct  _player {
 }__attribute__ ((__packed__));
 typedef struct _player Player;
 
-const int32_t WIN_SCORE = 10;
 struct  _system {
     int32_t player_num;     // 3 or 4
     int32_t knight_card;    // at most 14

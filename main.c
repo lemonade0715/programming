@@ -16,20 +16,21 @@ typedef enum State
 } state;
 
 System system_setting;
+struct CatanTile tiles[NUM_TILES];
 
 int production();
 int trade();
 int build();
 int robber();
 
+
 int main()
 {
     // 將遊戲設定至準備階段
     state game_state = State_Prepare;
     system_setting.player_num = 4;
-    Player players[system_setting.player_num];
+    Player player_list[system_setting.player_num];
     
-    struct CatanTile tiles[NUM_TILES];
     generateCatanTiles(tiles);
     printCatanTiles(tiles);
     
@@ -41,27 +42,28 @@ int main()
     
     while (1)
     {
-        printf("玩家%d收成階段：\n", current_player);
-        production(current_player);
+        printf("\033[1m【玩家%d - 收成階段】\033[0m\n", current_player);
+        production(player_list, current_player);
         game_state = State_Trade;
         
-        printf("玩家%d交易階段：\n", current_player);
-        trade(current_player);
+        printf("\033[1m【玩家%d - 交易階段】\033[0m\n", current_player);
+        trade(player_list, current_player);
         game_state = State_Build;
         
-        printf("玩家%d建築階段：\n", current_player);
-        build(current_player);
+        printf("\033[1m【玩家%d - 建築階段】\033[0m\n", current_player);
+        build(player_list, current_player);
         game_state = State_Production;
         
         current_player = (current_player + 1) % system_setting.player_num;
+        return 0;
     }
     
     return 0;
 }
 
-int production(int player)
+int production(Player *player_list, int player)
 {
-    printf("當前玩家：代號%d\n", player);
+    printf("當前玩家：玩家%d\n", player);
     // 擲骰子
     srand(time(NULL));
     int temp = (rand() % 6) + 2;
@@ -74,7 +76,7 @@ int production(int player)
     if (temp == 7)
     {
         printf("觸發強盜事件！\n");
-        robber(player);
+        robber(player_list, player);
     }
     else
     {
@@ -85,7 +87,7 @@ int production(int player)
     return 0;
 }
 
-int trade(int player)
+int trade(Player *player_list, int player)
 {
     
     
@@ -93,7 +95,7 @@ int trade(int player)
     return 0;
 }
 
-int build(int player)
+int build(Player *player_list, int player)
 {
     
     
@@ -102,36 +104,49 @@ int build(int player)
     return 0;
 }
 
-int robber(int player)
+int robber(Player *player_list, int player)
 {
     // 檢查是否有人資源卡超過七張
     for (int i = 0; i < system_setting.player_num; i++)
     {
-        while (players[i].total_resource > 7)
+        while (player_list[i].total_resource > 7)
         {
             // 捨棄最多的資源卡，若最多的不止一個，則捨棄其中的第一個
             int max_pos = 6;
             for (int j = 5; j >= 0; j--)
             {
-                max_pos = (players[i].resource[j] > players[i].resource[max_pos]) ? j : max_pos;
+                max_pos = (player_list[i].resource[j] > player_list[i].resource[max_pos]) ? j : max_pos;
             }
-            players[i].resource[max_pos]--;
-            players[i].total_resource--;
+            player_list[i].resource[max_pos]--;
+            player_list[i].total_resource--;
         }
     }
     
     // 移動強盜
-    int robber_position = 0;
+    int robber_position = -1;
     int robber_position_prev = 0;
-    // TODO: 取得目前的強盜位置
+    for (int i = 0; i < NUM_TILES; i++)
+    {
+        robber_position_prev = (tiles[i].hasRobber) ? i : robber_position_prev;
+    }
+    printf("%d", robber_position_prev);
+    
     printf("請玩家%d移動強盜的位置。\n", player);
     if (player == 0) // 真人玩家
     {
         printf("請選擇您要將強盜移動至：");
         scanf("%d", &robber_position);
-        while (robber_position == robber_position_prev)
+        while (robber_position == robber_position_prev || robber_position < 0 || robber_position > 18)
         {
-            printf("強盜必須移動，請選擇您要將強盜移動至：");
+            if (robber_position < 0 || robber_position > 18)
+            {
+                printf("板塊需介於 0 ~ %d 之間", NUM_TILES - 1);
+            }
+            else
+            {
+                printf("強盜必須移動");
+            }
+            printf("，請選擇您要將強盜移動至：");
             scanf("%d", &robber_position);
         }
     }
@@ -144,8 +159,11 @@ int robber(int player)
         {
             robber_position = rand() % NUM_TILES;
         }
+        printf("%d\n", robber_position);
     }
-    // TODO: 移動強盜，更新強盜位置
+    // 移動強盜，更新強盜位置
+    tiles[robber_position_prev].hasRobber = 0;
+    tiles[robber_position].hasRobber = 1;
     printf("強盜已經被移動至板塊%d！\n", robber_position);
     
     // TODO: 搶奪資源

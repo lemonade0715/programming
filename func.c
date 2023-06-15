@@ -6,9 +6,6 @@
 
 #include "func.h"
 
-// 麥田x4、森林x4、草原x4、山脈x3、丘陵x3、沙漠x1
-#define NUM_TILES 19  // 板塊的總數量
-
 // 產生板塊
 void generateCatanTiles(struct CatanTile* tiles) {
 // 內陸板塊有6種場地：麥田x4、森林x4、草原x4、山脈x3、丘陵x3、沙漠x1。
@@ -20,7 +17,7 @@ void generateCatanTiles(struct CatanTile* tiles) {
       Hill, Hill, Hill,
       Desert };
 
-    int numbers[NUM_TILES] = { 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
+    int numbers[NUM_TILES] = {2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};
     int remaining = NUM_TILES;
 
     shuffleResource(resources, NUM_TILES);  // 將resource洗牌
@@ -44,10 +41,10 @@ void generateCatanTiles(struct CatanTile* tiles) {
 
 // 測試函式：列印Catan板塊的資源類型和點數
 void printCatanTiles(struct CatanTile* tiles) {
-    int i;
-
-    for (i = 0; i < NUM_TILES; i++) {
-        printf("板塊 %d - 資源: ", i + 1);
+    printf("\033[1m【板塊分布】\033[0m\n");
+    
+    for (int i = 0; i < NUM_TILES; i++) {
+        printf("板塊 %02d - ", i);
         switch (tiles[i].resourceType) {
             case Wheat:
                 printf("麥田");
@@ -71,9 +68,9 @@ void printCatanTiles(struct CatanTile* tiles) {
               printf("%d", tiles[i].resourceType);
               break;
         }
-        printf(", 數字: %d", tiles[i].number);
+        printf("(%d)", tiles[i].number);
         if (tiles[i].hasRobber == 1) {
-            printf(", 有盜賊");
+            printf(" * 有盜賊");
         }
         printf("\n");
     }
