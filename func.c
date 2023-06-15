@@ -99,7 +99,7 @@ void shuffleNumbers(int* array, int length) {
 }
 
 // return 1 代表遊戲結束
-int refresh(Player player_list, System system_setting)
+int refresh(Player *player_list, System system_setting)
 {
     // player total resource
     for (int i = 0; i < system_setting.player_num; i++)
