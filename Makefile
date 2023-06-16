@@ -1,3 +1,3 @@
 all:
-	gcc main.c func.c -o main
+	gcc main.c func.c system.c -o main
 	@echo "Complete successfully.\n"

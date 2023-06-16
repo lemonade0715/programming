@@ -3,8 +3,9 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-
+#include <string.h>
 #include "func.h"
+#include "system.h"
 
 // 產生板塊
 void generateCatanTiles(struct CatanTile* tiles) {
@@ -17,6 +18,10 @@ void generateCatanTiles(struct CatanTile* tiles) {
       Hill, Hill, Hill,
       Desert };
 
+    char *typeNames[] = {
+        "麥田", "森林", "草原", "山脈", "丘陵", "沙漠"
+    };
+
     int numbers[NUM_TILES] = {2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};
     int remaining = NUM_TILES;
 
@@ -26,6 +31,7 @@ void generateCatanTiles(struct CatanTile* tiles) {
     int numberIdx = 0;
     for (int resourceIdx = 0; resourceIdx < NUM_TILES; resourceIdx++) {
         tiles[resourceIdx].resourceType = resources[resourceIdx];
+        strcpy(tiles[resourceIdx].typeName, typeNames[resources[resourceIdx]]);
         if (tiles[resourceIdx].resourceType == Desert) {
             // 是沙漠的話，不放數字，放盜賊
             tiles[resourceIdx].hasRobber = 1;
@@ -44,30 +50,30 @@ void printCatanTiles(struct CatanTile* tiles) {
     printf("\033[1m【板塊分布】\033[0m\n");
     
     for (int i = 0; i < NUM_TILES; i++) {
-        printf("板塊 %02d - ", i);
-        switch (tiles[i].resourceType) {
-            case Wheat:
-                printf("麥田");
-                break;
-            case Wood:
-                printf("森林");
-                break;
-            case Grassland:
-                printf("草原");
-                break;
-            case Mountain:
-                printf("山脈");
-                break;
-            case Hill:
-                printf("丘陵");
-                break;
-            case Desert:
-                printf("沙漠");
-                break;
-            default:
-              printf("%d", tiles[i].resourceType);
-              break;
-        }
+        printf("板塊 %02d - %s", i, tiles[i].typeName);
+        // switch (tiles[i].resourceType) {
+        //     case Wheat:
+        //         printf("麥田");
+        //         break;
+        //     case Wood:
+        //         printf("森林");
+        //         break;
+        //     case Grassland:
+        //         printf("草原");
+        //         break;
+        //     case Mountain:
+        //         printf("山脈");
+        //         break;
+        //     case Hill:
+        //         printf("丘陵");
+        //         break;
+        //     case Desert:
+        //         printf("沙漠");
+        //         break;
+        //     default:
+        //       printf("%d", tiles[i].resourceType);
+        //       break;
+        // }
         printf("(%d)", tiles[i].number);
         if (tiles[i].hasRobber == 1) {
             printf(" * 有盜賊");
@@ -137,8 +143,8 @@ int refresh(Player *player_list, System system_setting)
     for (int i = 0; i < system_setting.player_num; i++)
     {
         system_setting.player_score[i] = 0;
-        system_setting.player_score[i] += player_list[i].village;
-        system_setting.player_score[i] += 2 * player_list[i].city;
+        // system_setting.player_score[i] += player_list[i].village;
+        // system_setting.player_score[i] += 2 * player_list[i].city;
         for (int j = 20; j < 25; j++)
         {
             system_setting.player_score[i] += player_list[i].develop_cards[j];
