@@ -7,7 +7,7 @@
 #include "func.h"
 #include "system.h"
 
-#define WINDOWS 1
+#define WINDOWS 0
 
 const char resource_name[][7] = {"小麥", "木頭", "羊毛", "石頭", "磚頭"};
 const char develop_card_name[][13] = {"騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "資源壟斷", "資源壟斷", "道路建設", "道路建設", "創新發明", "創新發明", "分數卡", "分數卡", "分數卡", "分數卡", "分數卡"};
@@ -58,7 +58,7 @@ int main()
     
     generateCatanTiles(tiles);
     printCatanTiles(tiles);
-    
+
     int current_player = 0;
     // TODO: Some Initialization
     

@@ -7,12 +7,16 @@
 #include "func.h"
 #include "system.h"
 
+void initCornerId(struct CatanTile* tiles);
+void print_corner_id(struct CatanTile* tiles);
+
+
 // 產生板塊
 void generateCatanTiles(struct CatanTile* tiles) {
 // 內陸板塊有6種場地：麥田x4、森林x4、草原x4、山脈x3、丘陵x3、沙漠x1。
     enum ResourceType resources[NUM_TILES] = {
-      Wheat, Wheat, Wheat, Wheat,
-      Wood, Wood, Wood, Wood,
+      Field, Field, Field, Field,
+      Forest, Forest, Forest, Forest,
       Grassland, Grassland, Grassland, Grassland,
       Mountain, Mountain, Mountain,
       Hill, Hill, Hill,
@@ -30,6 +34,7 @@ void generateCatanTiles(struct CatanTile* tiles) {
 
     int numberIdx = 0;
     for (int resourceIdx = 0; resourceIdx < NUM_TILES; resourceIdx++) {
+        initCornerId(tiles);
         tiles[resourceIdx].resourceType = resources[resourceIdx];
         strcpy(tiles[resourceIdx].typeName, typeNames[resources[resourceIdx]]);
         if (tiles[resourceIdx].resourceType == Desert) {
@@ -42,7 +47,11 @@ void generateCatanTiles(struct CatanTile* tiles) {
             tiles[resourceIdx].number = numbers[numberIdx];
             numberIdx++;
         }
+        for(int i = 0; i < 6; ++i){
+            tiles[resourceIdx].has_village[i] = 0;
+        }
     }
+
 }
 
 // 測試函式：列印Catan板塊的資源類型和點數
@@ -143,8 +152,14 @@ int refresh(Player *player_list, System system_setting)
     for (int i = 0; i < system_setting.player_num; i++)
     {
         system_setting.player_score[i] = 0;
-        // system_setting.player_score[i] += player_list[i].village;
-        // system_setting.player_score[i] += 2 * player_list[i].city;
+        for(int j = 0; j < MAX_CITIES; j++)
+        {
+            system_setting.player_score[i] += (player_list[i].village[i] != 0);
+        }
+        for(int j = 0; j < MAX_CITIES; j++)
+        {
+            system_setting.player_score[i] += (player_list[i].city[i] != 0);
+        }
         for (int j = 20; j < 25; j++)
         {
             system_setting.player_score[i] += player_list[i].develop_cards[j];
@@ -172,3 +187,87 @@ if (refresh(player_list, system_setting))
     return 0;
 }
 */
+
+void initCornerId(struct CatanTile* tiles){
+    tiles[0].corner_id[0] = 0;
+    tiles[0].corner_id[1] = 1;
+    tiles[0].corner_id[2] = 4;
+    tiles[0].corner_id[3] = 5;
+    tiles[0].corner_id[4] = 9;
+    tiles[0].corner_id[5] = 10;
+
+    for(int i = 0; i < 2; ++i){
+        tiles[i+1].corner_id[0] = i*2 + 3;
+        tiles[i+1].corner_id[1] = i*2 + 4;
+        tiles[i+1].corner_id[2] = i*2 + 8;
+        tiles[i+1].corner_id[3] = i*2 + 9;
+        tiles[i+1].corner_id[4] = i*2 + 14;
+        tiles[i+1].corner_id[5] = i*2 + 15;
+    }
+    for(int i = 0; i < 3; ++i){
+        tiles[i+3].corner_id[0] = i*2 + 7;
+        tiles[i+3].corner_id[1] = i*2 + 8;
+        tiles[i+3].corner_id[2] = i*2 + 13;
+        tiles[i+3].corner_id[3] = i*2 + 14;
+        tiles[i+3].corner_id[4] = i*2 + 19;
+        tiles[i+3].corner_id[5] = i*2 + 20;
+    }
+    for(int i = 0; i < 2; ++i){
+        tiles[i+6].corner_id[0] = i*2 + 14;
+        tiles[i+6].corner_id[1] = i*2 + 15;
+        tiles[i+6].corner_id[2] = i*2 + 20;
+        tiles[i+6].corner_id[3] = i*2 + 21;
+        tiles[i+6].corner_id[4] = i*2 + 26;
+        tiles[i+6].corner_id[5] = i*2 + 27;
+    }
+    for(int i = 0; i < 3; ++i){
+        tiles[i+8].corner_id[0] = i*2 + 19;
+        tiles[i+8].corner_id[1] = i*2 + 20;
+        tiles[i+8].corner_id[2] = i*2 + 25;
+        tiles[i+8].corner_id[3] = i*2 + 26;
+        tiles[i+8].corner_id[4] = i*2 + 31;
+        tiles[i+8].corner_id[5] = i*2 + 32;
+    }
+    for(int i = 0; i < 2; ++i){
+        tiles[i+11].corner_id[0] = i*2 + 26;
+        tiles[i+11].corner_id[1] = i*2 + 27;
+        tiles[i+11].corner_id[2] = i*2 + 32;
+        tiles[i+11].corner_id[3] = i*2 + 33;
+        tiles[i+11].corner_id[4] = i*2 + 38;
+        tiles[i+11].corner_id[5] = i*2 + 39;
+    }
+    for(int i = 0; i < 3; ++i){
+        tiles[i+13].corner_id[0] = i*2 + 31;
+        tiles[i+13].corner_id[1] = i*2 + 32;
+        tiles[i+13].corner_id[2] = i*2 + 37;
+        tiles[i+13].corner_id[3] = i*2 + 38;
+        tiles[i+13].corner_id[4] = i*2 + 43;
+        tiles[i+13].corner_id[5] = i*2 + 44;
+    }
+    for(int i = 0; i < 2; ++i){
+        tiles[i+16].corner_id[0] = i*2 + 38;
+        tiles[i+16].corner_id[1] = i*2 + 39;
+        tiles[i+16].corner_id[2] = i*2 + 44;
+        tiles[i+16].corner_id[3] = i*2 + 45;
+        tiles[i+16].corner_id[4] = i*2 + 49;
+        tiles[i+16].corner_id[5] = i*2 + 50;
+    }
+    
+    tiles[18].corner_id[0] = 45;
+    tiles[18].corner_id[1] = 46;
+    tiles[18].corner_id[2] = 50;
+    tiles[18].corner_id[3] = 51;
+    tiles[18].corner_id[4] = 53;
+    tiles[18].corner_id[5] = 54;
+
+}
+
+void print_corner_id(struct CatanTile* tiles){
+    for(int i = 0; i < 19; ++i){
+        printf("tile %d: ", i);
+        for(int j = 0; j < 6; ++j){
+            printf("%d ", tiles[i].corner_id[j]);
+        }
+        printf("\n");
+    }
+}

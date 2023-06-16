@@ -23,9 +23,9 @@ struct  _player {
     int32_t resource[5]; // not show to other players
     int32_t total_resource; //show to other players
     int32_t is_used_develop_card; // initalize to 0 each round
-    int road[15][2]; // 玩家擁有的道路數量
-    int village[MAX_SETTLEMENTS]; // 玩家擁有的村莊數量
-    int city[MAX_CITIES]; // 玩家擁有的城市數量
+    int road[15][2]; // 玩家擁有的道路數量 //TODO
+    int village[MAX_SETTLEMENTS]; // 玩家擁有的村莊編號
+    int city[MAX_CITIES]; // 玩家擁有的城市編號
     int develop_cards[25]; // 14+6+5，0:未擁有 1:未使用 2:已使用 (分數卡只有0,1)
     int new_develop_card; // 當回合購買的發展卡，每回合初始化為-1
     int32_t NPC_difficulty; // user is 0, only for NPC, 1 is the hardest, 2 is the easiest
@@ -33,8 +33,8 @@ struct  _player {
 typedef struct _player Player;
 
 enum ResourceType { // 宣告六種版塊類型
-    Wheat = 0,
-    Wood,
+    Field = 0,
+    Forest,
     Grassland,
     Mountain,
     Hill,
@@ -46,6 +46,9 @@ struct CatanTile { // 定義每個版塊內容
     char typeName[19]; // 類型名稱
     int number;        // 分配到的數字指示物
     int hasRobber;     // 是否有盜賊
+    
+    int corner_id[6];
+    int has_village[6]; // 0: no village, 1: village, 2: city
 };
 
 //
@@ -54,7 +57,6 @@ void generateCatanTiles(struct CatanTile* tiles);
 void printCatanTiles(struct CatanTile* tiles);
 void shuffleResource(enum ResourceType* array, int length);
 void shuffleNumbers(int* array, int length);
-
 //
 
 #endif
