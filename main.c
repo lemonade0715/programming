@@ -144,6 +144,7 @@ int trade(Player *player_list, int player)
                     while (getchar() != '\n');
                     continue;
                 }
+                while (getchar() != '\n');
                 break;
             }
             if (option == 0)
@@ -168,6 +169,7 @@ int trade(Player *player_list, int player)
                             while (getchar() != '\n');
                             continue;
                         }
+                        while (getchar() != '\n');
                         break;
                     }
                     
@@ -193,6 +195,7 @@ int trade(Player *player_list, int player)
                                     while (getchar() != '\n');
                                     continue;
                                 }
+                                while (getchar() != '\n');
                                 break;
                             }
                             
@@ -305,6 +308,7 @@ int robber(Player *player_list, int player)
                     while (getchar() != '\n');
                     continue;
                 }
+                while (getchar() != '\n');
                 break;
             }
             while (1)
@@ -315,6 +319,7 @@ int robber(Player *player_list, int player)
                     while (getchar() != '\n');
                     continue;
                 }
+                while (getchar() != '\n');
                 break;
             }
             
@@ -388,6 +393,7 @@ int use_develop_card(Player *player_list, int player)
                     while (getchar() != '\n');
                     continue;
                 }
+                while (getchar() != '\n');
                 break;
             }
             
@@ -429,6 +435,7 @@ int use_develop_card(Player *player_list, int player)
                                 while (getchar() != '\n');
                                 continue;
                             }
+                            while (getchar() != '\n');
                             break;
                         }
                         
@@ -465,6 +472,7 @@ int use_develop_card(Player *player_list, int player)
                                 while (getchar() != '\n');
                                 continue;
                             }
+                            while (getchar() != '\n');
                             break;
                         }
                         
@@ -499,6 +507,7 @@ int use_develop_card(Player *player_list, int player)
                                 while (getchar() != '\n');
                                 continue;
                             }
+                            while (getchar() != '\n');
                             break;
                         }
                         
@@ -528,6 +537,7 @@ int use_develop_card(Player *player_list, int player)
                                 while (getchar() != '\n');
                                 continue;
                             }
+                            while (getchar() != '\n');
                             break;
                         }
                         
