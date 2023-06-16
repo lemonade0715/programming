@@ -7,6 +7,7 @@
 #include "func.h"
 #include "system.h"
 
+#define WINDOWS 0
 
 const char resource_name[][7] = {"小麥", "木頭", "羊毛", "石頭", "磚頭"};
 const char develop_card_name[][13] = {"騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "資源壟斷", "資源壟斷", "道路建設", "道路建設", "創新發明", "創新發明", "分數卡", "分數卡", "分數卡", "分數卡", "分數卡"};
@@ -51,7 +52,6 @@ int main()
 {
     // 將遊戲設定至準備階段
     state game_state = State_Prepare;
-    system_setting.player_num = 4;
     Player player_list[system_setting.player_num];
     
     generateCatanTiles(tiles);
@@ -61,9 +61,7 @@ int main()
     // TODO: Some Initialization
     
     srand(time(NULL));
-    srand(time(NULL));
     game_state = State_Production;
-    current_player = 0;
     
     while (1)
     {
@@ -95,8 +93,6 @@ int main()
         build(player_list, current_player);
         game_state = State_Production;
         
-        
-        
         current_player = (current_player + 1) % system_setting.player_num;
     }
     
@@ -107,8 +103,14 @@ int production(Player *player_list, int player)
 {
     printf("當前玩家：玩家%d\n", player);
     // 擲骰子
+    #if WINDOWS
+    int temp = (rand() % 6) + 2;
+    temp += rand() % 6;
+    #else
     int temp = arc4random_uniform(5) + 2;
     temp += arc4random_uniform(5);
+    #endif
+    
     // 印出擲骰資訊
     printf("骰子點數和：%d，", temp);
     
@@ -130,75 +132,6 @@ int production(Player *player_list, int player)
 int trade(Player *player_list, int player)
 {
     if (player == 0)
-    {
-        while (1)
-        {
-            int option = 0;
-            printf("\n你要和誰交易？\n（0為放棄交易，1-%d為其它玩家，%d為與銀行交易，%d選擇擁有的港口交易）：", system_setting.player_num - 1, system_setting.player_num, system_setting.player_num + 1);
-            scanf("%d", &option);
-            if (option == 0)
-            {
-                printf("交易階段結束\n");
-                return 0;
-            }
-            else if (option > 0 && option < system_setting.player_num)
-            {
-                // TODO: Trade with other players
-            }
-            else if (option == system_setting.player_num)
-            {
-                while (1)
-                {
-                    int option_2 = 0;
-                    printf("\n你想要用哪個資源兌換？(4:1交易)\n（0.放棄 1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
-                    scanf("%d", &option_2);
-                    if (option_2 == 0)
-                    {
-                        break;
-                    }
-                    else if (option_2 > 0 && option_2 < 6)
-                    {
-                        if (player_list[player].resource[option_2 - 1] < 4)
-                        {
-                            printf("\n您的%s只有%d個，需要4個才能進行與銀行的交易！\n", resource_name[option_2 - 1], player_list[player].resource[option_2 - 1]);
-                            continue;
-                        }
-                        while (1)
-                        {
-                            int option_3 = 0;
-                            printf("\n你有%d個%s，請問您想兌換成哪種資源？(4:1交易)\n（0.放棄 1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：", player_list[player].resource[option_2 - 1], resource_name[option_2 - 1]);
-                            scanf("%d", &option_3);
-                            if (option_3 == 0)
-                            {
-                                break;
-                            }
-                            else if (option_3 == option_2)
-                            {
-                                printf("\n不能兌換為同類型的資源，請選擇其它資源！\n");
-                                continue;
-                            }
-                            else if (option_3 > 0 && option_3 < 6)
-                            {
-                                if (system_setting.bank_resource[option_3 - 1] < 1)
-                                {
-                                    printf("\n銀行的%s不足，請選擇其它資源！\n", resource_name[option_3 - 1]);
-                                    continue;
-                                }
-                                player_list[player].resource[option_2 - 1] -= 4;
-                                system_setting.bank_resource[option_2 - 1] += 4;
-                                system_setting.bank_resource[option_3 - 1] -= 1;
-                                player_list[player].resource[option_3 - 1] += 1;
-                                printf("\n交易成功！\n");
-                                option_2 = -1;
-                                break;
-                            }
-                            else
-                            {
-                                printf("\n請輸入0-5之間的值！\n");
-                                continue;
-                            }
-                        }
-                        if (player == 0)
     {
         while (1)
         {
@@ -292,30 +225,6 @@ int trade(Player *player_list, int player)
         }
         return 0;
     }
-                        if (option_2 == -1)
-                        {
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        printf("\n請輸入0-5之間的值！\n");
-                        continue;
-                    }
-                }
-            }
-            else if (option == system_setting.player_num + 1)
-            {
-                // TODO: 港口交易
-            }
-            else
-            {
-                printf("\n請輸入0-%d之間的值！\n", system_setting.player_num + 1);
-                continue;
-            }
-        }
-        return 0;
-    }
     
     // TODO: computer player
     
@@ -384,13 +293,19 @@ int robber(Player *player_list, int player)
     }
     else // 電腦玩家
     {
-        robber_position = arc4random_uniform(NUM_TILES);
-        robber_position = arc4random_uniform(NUM_TILES);
+        #if WINDOWS
+        robber_position = rand() % NUM_TILES;
         while (robber_position == robber_position_prev)
         {
-            robber_position = arc4random_uniform(NUM_TILES);
-            robber_position = arc4random_uniform(NUM_TILES);
+            robber_position = rand() % NUM_TILES;
         }
+        #else
+        robber_position = arc4random_uniform(NUM_TILES - 1);
+        while (robber_position == robber_position_prev)
+        {
+            robber_position = arc4random_uniform(NUM_TILES - 1);
+        }
+        #endif
     }
     // 移動強盜，更新強盜位置
     tiles[robber_position_prev].hasRobber = 0;
@@ -555,7 +470,12 @@ int use_develop_card(Player *player_list, int player)
     }
     
     // Computer
+    #if WINDOWS
+    option = rand() % 20;
+    #else
     option = arc4random_uniform(19);
+    #endif
+    
     int option_2 = 0;
     if (player_list[player].develop_cards[option] == 1)
     {
@@ -569,11 +489,19 @@ int use_develop_card(Player *player_list, int player)
                 robber_position_prev = (tiles[i].hasRobber) ? i : robber_position_prev;
             }
             
-            robber_position = arc4random_uniform(NUM_TILES);
+            #if WINDOWS
+            robber_position = rand() % NUM_TILES;
             while (robber_position == robber_position_prev)
             {
-                robber_position = arc4random_uniform(NUM_TILES);
+                robber_position = rand() % NUM_TILES;
             }
+            #else
+            robber_position = arc4random_uniform(NUM_TILES - 1);
+            while (robber_position == robber_position_prev)
+            {
+                robber_position = arc4random_uniform(NUM_TILES - 1);
+            }
+            #endif
             
             // 移動強盜，更新強盜位置
             tiles[robber_position_prev].hasRobber = 0;
@@ -585,7 +513,12 @@ int use_develop_card(Player *player_list, int player)
         }
         else if (option == 14 || option == 15) // 資源壟斷
         {
+            #if WINDOWS
+            option_2 = rand() % 5;
+            #else
             option_2 = arc4random_uniform(4);
+            #endif
+            
             for (int i = 0; i < system_setting.player_num; i++)
             {
                 if (i == player)
@@ -605,7 +538,12 @@ int use_develop_card(Player *player_list, int player)
         {
             while (1)
             {
+                #if WINDOWS
+                option_2 = rand() % 5;
+                #else
                 option_2 = arc4random_uniform(4);
+                #endif
+                
                 if (system_setting.bank_resource[option_2] < 1)
                 {
                     continue;
@@ -617,7 +555,12 @@ int use_develop_card(Player *player_list, int player)
             }
             while (1)
             {
+                #if WINDOWS
+                option_2 = rand() % 5;
+                #else
                 option_2 = arc4random_uniform(4);
+                #endif
+                
                 if (system_setting.bank_resource[option_2] < 1)
                 {
                     continue;
@@ -632,4 +575,3 @@ int use_develop_card(Player *player_list, int player)
     
     return 0;
 }
-
