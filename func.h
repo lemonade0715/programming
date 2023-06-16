@@ -17,8 +17,6 @@ typedef enum Resource
     BRICK
 } resource;
 
-const char resource_name[][5] = {"小麥", "木頭", "羊毛", "石頭", "磚頭"};
-
 struct  _player {
     int32_t resource[5]; // not show to other players
     int32_t total_resource; //show to other players
