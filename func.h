@@ -10,7 +10,14 @@
 #define MAX_SETTLEMENTS 5 
 #define MAX_CITIES 4
 
-enum {WHEAT = 0, WOOD, WOOL, STONE, BRICK};
+typedef enum Resource
+{
+    WHEAT = 0,
+    WOOD,
+    WOOL,
+    STONE,
+    BRICK
+} resource;
 
 struct  _player {
     int32_t resource[5]; // not show to other players

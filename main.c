@@ -11,6 +11,9 @@
 const char resource_name[][7] = {"小麥", "木頭", "羊毛", "石頭", "磚頭"};
 const char develop_card_name[][13] = {"騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "資源壟斷", "資源壟斷", "道路建設", "道路建設", "創新發明", "創新發明", "分數卡", "分數卡", "分數卡", "分數卡", "分數卡"};
 
+const char resource_name[][7] = {"小麥", "木頭", "羊毛", "石頭", "磚頭"};
+const char develop_card_name[][13] = {"騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "資源壟斷", "資源壟斷", "道路建設", "道路建設", "創新發明", "創新發明", "分數卡", "分數卡", "分數卡", "分數卡", "分數卡"};
+
 typedef enum State
 {
     State_Prepare, // 準備
@@ -41,6 +44,11 @@ int trade(Player *player_list, int player);
 int build(Player *player_list, int player);
 int robber(Player *player_list, int player);
 int use_develop_card(Player *player_list, int player);
+int production(Player *player_list, int player);
+int trade(Player *player_list, int player);
+int build(Player *player_list, int player);
+int robber(Player *player_list, int player);
+int use_develop_card(Player *player_list, int player);
 
 int main()
 {
@@ -55,6 +63,7 @@ int main()
     int current_player = 0;
     // TODO: Some Initialization
     
+    srand(time(NULL));
     srand(time(NULL));
     game_state = State_Production;
     current_player = 0;
@@ -71,18 +80,24 @@ int main()
         
         sleep(1);
         printf("\n\033[1m【玩家%d - 收成階段】\033[0m\n", current_player);
+        sleep(1);
+        printf("\n\033[1m【玩家%d - 收成階段】\033[0m\n", current_player);
         production(player_list, current_player);
         game_state = State_Trade;
         
+        sleep(1);
+        printf("\n\033[1m【玩家%d - 交易階段】\033[0m", current_player);
         sleep(1);
         printf("\n\033[1m【玩家%d - 交易階段】\033[0m", current_player);
         trade(player_list, current_player);
         game_state = State_Build;
         
         sleep(1);
-        printf("\n\033[1m【玩家%d - 建築階段】\033[0m\n", current_player);
+        sleep(1);
+        printf("\n\n\033[1m【玩家%d - 建築階段】\033[0m\n", current_player);
         build(player_list, current_player);
         game_state = State_Production;
+        
         
         
         current_player = (current_player + 1) % system_setting.player_num;
@@ -186,7 +201,100 @@ int trade(Player *player_list, int player)
                                 continue;
                             }
                         }
+                        if (player == 0)
+    {
+        while (1)
+        {
+            int option = 0;
+            printf("\n你要和誰交易？\n（0為放棄交易，1-%d為其它玩家，%d為與銀行交易，%d選擇擁有的港口交易）：", system_setting.player_num - 1, system_setting.player_num, system_setting.player_num + 1);
+            scanf("%d", &option);
+            if (option == 0)
+            {
+                printf("交易階段結束\n");
+                return 0;
+            }
+            else if (option > 0 && option < system_setting.player_num)
+            {
+                // TODO: Trade with other players
+            }
+            else if (option == system_setting.player_num)
+            {
+                while (1)
+                {
+                    int option_2 = 0;
+                    printf("\n你想要用哪個資源兌換？(4:1交易)\n（0.放棄 1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
+                    scanf("%d", &option_2);
+                    if (option_2 == 0)
+                    {
+                        break;
+                    }
+                    else if (option_2 > 0 && option_2 < 6)
+                    {
+                        if (player_list[player].resource[option_2 - 1] < 4)
+                        {
+                            printf("\n您的%s只有%d個，需要4個才能進行與銀行的交易！\n", resource_name[option_2 - 1], player_list[player].resource[option_2 - 1]);
+                            continue;
+                        }
+                        while (1)
+                        {
+                            int option_3 = 0;
+                            printf("\n你有%d個%s，請問您想兌換成哪種資源？(4:1交易)\n（0.放棄 1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：", player_list[player].resource[option_2 - 1], resource_name[option_2 - 1]);
+                            scanf("%d", &option_3);
+                            if (option_3 == 0)
+                            {
+                                break;
+                            }
+                            else if (option_3 == option_2)
+                            {
+                                printf("\n不能兌換為同類型的資源，請選擇其它資源！\n");
+                                continue;
+                            }
+                            else if (option_3 > 0 && option_3 < 6)
+                            {
+                                if (system_setting.bank_resource[option_3 - 1] < 1)
+                                {
+                                    printf("\n銀行的%s不足，請選擇其它資源！\n", resource_name[option_3 - 1]);
+                                    continue;
+                                }
+                                player_list[player].resource[option_2 - 1] -= 4;
+                                system_setting.bank_resource[option_2 - 1] += 4;
+                                system_setting.bank_resource[option_3 - 1] -= 1;
+                                player_list[player].resource[option_3 - 1] += 1;
+                                printf("\n交易成功！\n");
+                                option_2 = -1;
+                                break;
+                            }
+                            else
+                            {
+                                printf("\n請輸入0-5之間的值！\n");
+                                continue;
+                            }
+                        }
                         
+                        if (option_2 == -1)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        printf("\n請輸入0-5之間的值！\n");
+                        continue;
+                    }
+                }
+            }
+            else if (option == system_setting.player_num + 1)
+            {
+                // TODO: 港口交易
+            }
+            else
+            {
+                printf("\n請輸入0-%d之間的值！\n", system_setting.player_num + 1);
+                continue;
+            }
+        }
+        return 0;
+    }
                         if (option_2 == -1)
                         {
                             break;
@@ -259,33 +367,271 @@ int robber(Player *player_list, int player)
         {
             printf("請選擇您要將強盜移動至：");
             scanf("%d", &robber_position);
+            printf("請選擇您要將強盜移動至：");
+            scanf("%d", &robber_position);
             if (robber_position < 0 || robber_position > 18)
             {
-                printf("板塊需介於 0 ~ %d 之間！\n", NUM_TILES - 1);
+                printf("板塊需介於 0 ~ %d 之間！\n！\n", NUM_TILES - 1);
+                continue;
                 continue;
             }
-            else if (robber_position == robber_position_prev)
+            else if (robber_position == robber_position_prev) if (robber_position == robber_position_prev)
             {
-                printf("強盜必須移動！\n");
+                printf("強盜必須移動！\n！\n");
+                continue;
                 continue;
             }
+            break;
             break;
         }
     }
     else // 電腦玩家
     {
         robber_position = arc4random_uniform(NUM_TILES);
+        robber_position = arc4random_uniform(NUM_TILES);
         while (robber_position == robber_position_prev)
         {
+            robber_position = arc4random_uniform(NUM_TILES);
             robber_position = arc4random_uniform(NUM_TILES);
         }
     }
     // 移動強盜，更新強盜位置
     tiles[robber_position_prev].hasRobber = 0;
     tiles[robber_position].hasRobber = 1;
-    printf("強盜已經被玩家%d移動至板塊%d！\n", player, robber_position);
+    printf("強盜已經被玩家%d玩家%d移動至板塊%d！\n", player, player, robber_position);
     
     // TODO: 搶奪資源
+    
+    return 0;
+}
+
+int use_develop_card(Player *player_list, int player)
+{
+    int option = 0;
+    if (player == 0)
+    {
+        while (1)
+        {
+            printf("以下為您可以使用的發展卡（灰色代表已使用）\n");
+            for (int i = 0; i < 20; i++)
+            {
+                if (player_list[player].develop_cards[i] == 1)
+                {
+                    printf("\033[90m%2d. %s\033[0m\n", i, develop_card_name[i]);
+                }
+                else if (player_list[player].develop_cards[i] == 2)
+                {
+                    printf("%2d. %s\n", i, develop_card_name[i]);
+                }
+            }
+            printf("請選擇您要使用的發展卡代號（-1為不使用）：");
+            scanf("%d", &option);
+            if (option == -1)
+            {
+                return 0;
+            }
+            else if (option >= 0 && option < 20)
+            {
+                if (player_list[player].develop_cards[option] == 0)
+                {
+                    printf("你未擁有此張發展卡，請重新輸入\n");
+                    continue;
+                }
+                else if (player_list[player].develop_cards[option] == 2)
+                {
+                    printf("您已經使用過此張發展卡，請重新輸入\n");
+                    continue;
+                }
+                
+                // 將該卡片更改為已使用
+                player_list[player].develop_cards[option] = 2;
+                
+                if (option < 14) // 騎士卡
+                {
+                    int robber_position = -1;
+                    int robber_position_prev = 0;
+                    for (int i = 0; i < NUM_TILES; i++)
+                    {
+                        robber_position_prev = (tiles[i].hasRobber) ? i : robber_position_prev;
+                    }
+                    while (1)
+                    {
+                        printf("請選擇您要將強盜移動至：");
+                        scanf("%d", &robber_position);
+                        if (robber_position < 0 || robber_position > 18)
+                        {
+                            printf("板塊需介於 0 ~ %d 之間！\n", NUM_TILES - 1);
+                            continue;
+                        }
+                        else if (robber_position == robber_position_prev)
+                        {
+                            printf("強盜必須移動！\n");
+                            continue;
+                        }
+                        // 移動強盜，更新強盜位置
+                        tiles[robber_position_prev].hasRobber = 0;
+                        tiles[robber_position].hasRobber = 1;
+                        printf("強盜已經被移動至板塊%d！\n", robber_position);
+                        
+                        // TODO: 搶奪資源
+                        
+                        break;
+                    }
+                }
+                else if (option == 14 || option == 15) // 資源壟斷
+                {
+                    while (1)
+                    {
+                        int option_2 = 0;
+                        printf("選擇一種資源，其它玩家必須將他手上所有該種資源交給你\n（1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
+                        scanf("%d", &option_2);
+                        if (option_2 < 1 || option_2 > 5)
+                        {
+                            printf("輸入錯誤，請輸入資源代碼(1-5)！\n");
+                            continue;
+                        }
+                        for (int j = 1; j < system_setting.player_num; j++)
+                        {
+                            printf("您從玩家%d獲得%d個%s！\n", j, player_list[j].resource[option_2 - 1], resource_name[option_2 - 1]);
+                            player_list[player].resource[option_2 - 1] += player_list[j].resource[option_2 - 1];
+                            player_list[j].resource[option_2 - 1] = 0;
+                        }
+                    }
+                }
+                else if (option == 16 || option == 17) // 道路建設
+                {
+                    // TODO: 道路建設
+                }
+                else if (option == 18 || option == 19) // 創新發明
+                {
+                    printf("您可以從銀行選擇兩張任意的資源卡：\n");
+                    while (1)
+                    {
+                        int option_2 = 0;
+                        printf("請選擇您要拿取的第一張資源卡\n（1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
+                        scanf("%d", &option_2);
+                        if (option_2 < 1 || option_2 > 5)
+                        {
+                            printf("輸入錯誤，請輸入資源代碼(1-5)！\n");
+                            continue;
+                        }
+                        else if (system_setting.bank_resource[option_2 - 1] < 1)
+                        {
+                            printf("銀行的%s不足，請選擇其它資源！\n", resource_name[option_2 - 1]);
+                            continue;
+                        }
+                        system_setting.bank_resource[option_2 - 1] -= 1;
+                        player_list[player].resource[option_2 - 1] += 1;
+                        printf("您已獲得1個%s！\n", resource_name[option_2 - 1]);
+                        break;
+                    }
+                    while (1)
+                    {
+                        int option_2 = 0;
+                        printf("請選擇您要拿取的第二張資源卡\n（1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
+                        scanf("%d", &option_2);
+                        if (system_setting.bank_resource[option_2 - 1] < 1)
+                        {
+                            printf("銀行的%s不足，請選擇其它資源！\n", resource_name[option_2 - 1]);
+                            continue;
+                        }
+                        system_setting.bank_resource[option_2 - 1] -= 1;
+                        player_list[player].resource[option_2 - 1] += 1;
+                        printf("您已獲得1個%s！\n", resource_name[option_2 - 1]);
+                        break;
+                    }
+                }
+                player_list[player].is_used_develop_card = 1;
+                return 0;
+            }
+            else if (option >= 20 && option < 25)
+            {
+                printf("無法使用分數卡，請輸入代號(0-19)，離開請輸入-1\n");
+                continue;
+            }
+            else
+            {
+                printf("輸入錯誤，請輸入代號(0-19)，離開請輸入-1\n");
+                continue;
+            }
+        }
+    }
+    
+    // Computer
+    option = arc4random_uniform(19);
+    int option_2 = 0;
+    if (player_list[player].develop_cards[option] == 1)
+    {
+        printf("玩家%d使用發展卡 - %d. %s！\n", player, option, develop_card_name[option]);
+        if (option < 14) // 騎士卡
+        {
+            int robber_position = -1;
+            int robber_position_prev = 0;
+            for (int i = 0; i < NUM_TILES; i++)
+            {
+                robber_position_prev = (tiles[i].hasRobber) ? i : robber_position_prev;
+            }
+            
+            robber_position = arc4random_uniform(NUM_TILES);
+            while (robber_position == robber_position_prev)
+            {
+                robber_position = arc4random_uniform(NUM_TILES);
+            }
+            
+            // 移動強盜，更新強盜位置
+            tiles[robber_position_prev].hasRobber = 0;
+            tiles[robber_position].hasRobber = 1;
+            printf("強盜已經被移動至板塊%d！\n", robber_position);
+            
+            // TODO: 搶奪資源
+            
+        }
+        else if (option == 14 || option == 15) // 資源壟斷
+        {
+            option_2 = arc4random_uniform(4);
+            for (int i = 0; i < system_setting.player_num; i++)
+            {
+                if (i == player)
+                {
+                    continue;
+                }
+                printf("玩家%d向玩家%d搶奪%d個%s！\n", player, i, player_list[i].resource[option_2], resource_name[option_2]);
+                player_list[player].resource[option_2] += player_list[i].resource[option_2];
+                player_list[i].resource[option_2] = 0;
+            }
+        }
+        else if (option == 16 || option == 17) // 道路建設
+        {
+            // TODO: 道路建設
+        }
+        else if (option == 18 || option == 19) // 創新發明
+        {
+            while (1)
+            {
+                option_2 = arc4random_uniform(4);
+                if (system_setting.bank_resource[option_2] < 1)
+                {
+                    continue;
+                }
+                printf("玩家%d向銀行拿取1個%s！\n", player, resource_name[option_2]);
+                system_setting.bank_resource[option_2] -= 1;
+                player_list[player].resource[option_2] += 1;
+                break;
+            }
+            while (1)
+            {
+                option_2 = arc4random_uniform(4);
+                if (system_setting.bank_resource[option_2] < 1)
+                {
+                    continue;
+                }
+                printf("玩家%d向銀行拿取1個%s！\n", player, resource_name[option_2]);
+                system_setting.bank_resource[option_2] -= 1;
+                player_list[player].resource[option_2] += 1;
+                break;
+            }
+        }
+    }
     
     return 0;
 }
