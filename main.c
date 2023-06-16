@@ -7,7 +7,7 @@
 #include "func.h"
 #include "system.h"
 
-#define WINDOWS 0
+#define WINDOWS 1
 
 const char resource_name[][7] = {"小麥", "木頭", "羊毛", "石頭", "磚頭"};
 const char develop_card_name[][13] = {"騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "資源壟斷", "資源壟斷", "道路建設", "道路建設", "創新發明", "創新發明", "分數卡", "分數卡", "分數卡", "分數卡", "分數卡"};
@@ -77,19 +77,14 @@ int main()
         
         sleep(1);
         printf("\n\033[1m【玩家%d - 收成階段】\033[0m\n", current_player);
-        sleep(1);
-        printf("\n\033[1m【玩家%d - 收成階段】\033[0m\n", current_player);
         production(player_list, current_player);
         game_state = State_Trade;
         
         sleep(1);
         printf("\n\033[1m【玩家%d - 交易階段】\033[0m", current_player);
-        sleep(1);
-        printf("\n\033[1m【玩家%d - 交易階段】\033[0m", current_player);
         trade(player_list, current_player);
         game_state = State_Build;
         
-        sleep(1);
         sleep(1);
         printf("\n\n\033[1m【玩家%d - 建築階段】\033[0m\n", current_player);
         build(player_list, current_player);

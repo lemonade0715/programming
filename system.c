@@ -35,7 +35,7 @@ void print_systemMsg(System *system_setting){
 }
 
 int special_show(System *system, int32_t i){
-    if(system->lr_player = -1 && system->mk_player == -1){
+    if(system->lr_player == -1 && system->mk_player == -1){
         return 0;
     }
     else{
