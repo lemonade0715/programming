@@ -12,6 +12,8 @@ char *progress_card_names[] = {
     "資源壟斷 Monopoly",
 };
 
-enum victory_point_cards{
+// enum victory_point_cards{
 
-};
+// };
+
+#endif
