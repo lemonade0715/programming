@@ -18,7 +18,7 @@ struct _system {
 }__attribute__ ((__packed__));
 typedef struct _system System;
 
-static int neightbors[55][3] = {
+static int neighbors[55][3] = {
     { 0,  0,  0}, 
     { 2,  4,  0}, { 1,  5,  0}, { 4,  8,  0}, { 1,  3,  9}, { 2,  6, 10},
     { 5, 11,  0}, { 8, 13,  0}, { 3,  7, 14}, { 4, 10, 15}, { 5,  9, 16},
