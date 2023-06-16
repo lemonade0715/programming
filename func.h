@@ -28,7 +28,7 @@ struct  _player {
     int city[MAX_CITIES]; // 玩家擁有的城市數量
     int develop_cards[25]; // 14+6+5，0:未擁有 1:未使用 2:已使用 (分數卡只有0,1)
     int new_develop_card; // 當回合購買的發展卡，每回合初始化為-1
-    int32_t NPC_difficulty; // user is 0, only for NPC
+    int32_t NPC_difficulty; // user is 0, only for NPC, 1 is the hardest, 2 is the easiest
 }__attribute__ ((__packed__));
 typedef struct _player Player;
 

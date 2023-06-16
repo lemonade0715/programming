@@ -571,11 +571,30 @@ int use_develop_card(Player *player_list, int player)
     }
     
     // Computer
-    #if WINDOWS
-    option = rand() % 20;
-    #else
-    option = arc4random_uniform(19);
-    #endif
+    switch (player_list[player].NPC_difficulty)
+    {
+        case 1:
+            for (int i = 0; i < 1000; i++)
+            {
+                #if WINDOWS
+                option = rand() % 20;
+                #else
+                option = arc4random_uniform(19);
+                #endif
+                if (player_list[player].develop_cards[option] == 1)
+                {
+                    break;
+                }
+            }
+            break;
+        case 2:
+            #if WINDOWS
+            option = rand() % 20;
+            #else
+            option = arc4random_uniform(19);
+            #endif
+            break;
+    }
     
     int option_2 = 0;
     if (player_list[player].develop_cards[option] == 1)
