@@ -11,6 +11,8 @@
 
 const char resource_name[][7] = {"小麥", "木頭", "羊毛", "石頭", "磚頭"};
 const char develop_card_name[][13] = {"騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "資源壟斷", "資源壟斷", "道路建設", "道路建設", "創新發明", "創新發明", "分數卡", "分數卡", "分數卡", "分數卡", "分數卡"};
+const int harbor[18] = {3, 4, 5, 6, 30, 36, 25, 31, 44, 49, 7, 13, 12, 18, 47, 52, 53, 54};
+const char harbor_name[][10] = {"小麥2:1", "小麥2:1", "木頭2:1", "木頭2:1", "羊毛2:1", "羊毛2:1", "石頭2:1", "石頭2:1", "磚頭2:1", "磚頭2:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1"};
 
 typedef enum State
 {
@@ -136,8 +138,17 @@ int trade(Player *player_list, int player)
         while (1)
         {
             int option = 0;
-            printf("\n你要和誰交易？\n（0為放棄交易，1-%d為其它玩家，%d為與銀行交易，%d選擇擁有的港口交易）：", system_setting.player_num - 1, system_setting.player_num, system_setting.player_num + 1);
-            scanf("%d", &option);
+            while (1)
+            {
+                printf("\n你要和誰交易？\n（0為放棄交易，1-%d為其它玩家，%d為與銀行交易，%d選擇擁有的港口交易）：", system_setting.player_num - 1, system_setting.player_num, system_setting.player_num + 1);
+                if (scanf("%d", &option) != 1)
+                {
+                    while (getchar() != '\n');
+                    continue;
+                }
+                while (getchar() != '\n');
+                break;
+            }
             if (option == 0)
             {
                 printf("交易階段結束\n");
@@ -152,8 +163,18 @@ int trade(Player *player_list, int player)
                 while (1)
                 {
                     int option_2 = 0;
-                    printf("\n你想要用哪個資源兌換？(4:1交易)\n（0.放棄 1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
-                    scanf("%d", &option_2);
+                    while (1)
+                    {
+                        printf("\n你想要用哪個資源兌換？(4:1交易)\n（0.放棄 1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
+                        if (scanf("%d", &option_2) != 1)
+                        {
+                            while (getchar() != '\n');
+                            continue;
+                        }
+                        while (getchar() != '\n');
+                        break;
+                    }
+                    
                     if (option_2 == 0)
                     {
                         break;
@@ -168,8 +189,18 @@ int trade(Player *player_list, int player)
                         while (1)
                         {
                             int option_3 = 0;
-                            printf("\n你有%d個%s，請問您想兌換成哪種資源？(4:1交易)\n（0.放棄 1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：", player_list[player].resource[option_2 - 1], resource_name[option_2 - 1]);
-                            scanf("%d", &option_3);
+                            while (1)
+                            {
+                                printf("\n你有%d個%s，請問您想兌換成哪種資源？(4:1交易)\n（0.放棄 1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：", player_list[player].resource[option_2 - 1], resource_name[option_2 - 1]);
+                                if (scanf("%d", &option_3) != 1)
+                                {
+                                    while (getchar() != '\n');
+                                    continue;
+                                }
+                                while (getchar() != '\n');
+                                break;
+                            }
+                            
                             if (option_3 == 0)
                             {
                                 break;
@@ -271,10 +302,29 @@ int robber(Player *player_list, int player)
     {
         while (1)
         {
-            printf("請選擇您要將強盜移動至：");
-            scanf("%d", &robber_position);
-            printf("請選擇您要將強盜移動至：");
-            scanf("%d", &robber_position);
+            while (1)
+            {
+                printf("請選擇您要將強盜移動至：");
+                if (scanf("%d", &robber_position) != 1)
+                {
+                    while (getchar() != '\n');
+                    continue;
+                }
+                while (getchar() != '\n');
+                break;
+            }
+            while (1)
+            {
+                printf("請選擇您要將強盜移動至：");
+                if (scanf("%d", &robber_position) != 1)
+                {
+                    while (getchar() != '\n');
+                    continue;
+                }
+                while (getchar() != '\n');
+                break;
+            }
+            
             if (robber_position < 0 || robber_position > 18)
             {
                 printf("板塊需介於 0 ~ %d 之間！\n！\n", NUM_TILES - 1);
@@ -336,8 +386,19 @@ int use_develop_card(Player *player_list, int player)
                     printf("%2d. %s\n", i, develop_card_name[i]);
                 }
             }
-            printf("請選擇您要使用的發展卡代號（-1為不使用）：");
-            scanf("%d", &option);
+            
+            while (1)
+            {
+                printf("請選擇您要使用的發展卡代號（-1為不使用）：");
+                if (scanf("%d", &option) != 1)
+                {
+                    while (getchar() != '\n');
+                    continue;
+                }
+                while (getchar() != '\n');
+                break;
+            }
+            
             if (option == -1)
             {
                 return 0;
@@ -368,8 +429,18 @@ int use_develop_card(Player *player_list, int player)
                     }
                     while (1)
                     {
-                        printf("請選擇您要將強盜移動至：");
-                        scanf("%d", &robber_position);
+                        while (1)
+                        {
+                            printf("請選擇您要將強盜移動至：");
+                            if (scanf("%d", &robber_position) != 1)
+                            {
+                                while (getchar() != '\n');
+                                continue;
+                            }
+                            while (getchar() != '\n');
+                            break;
+                        }
+                        
                         if (robber_position < 0 || robber_position > 18)
                         {
                             printf("板塊需介於 0 ~ %d 之間！\n", NUM_TILES - 1);
@@ -395,8 +466,18 @@ int use_develop_card(Player *player_list, int player)
                     while (1)
                     {
                         int option_2 = 0;
-                        printf("選擇一種資源，其它玩家必須將他手上所有該種資源交給你\n（1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
-                        scanf("%d", &option_2);
+                        while (1)
+                        {
+                            printf("選擇一種資源，其它玩家必須將他手上所有該種資源交給你\n（1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
+                            if (scanf("%d", &option_2) != 1)
+                            {
+                                while (getchar() != '\n');
+                                continue;
+                            }
+                            while (getchar() != '\n');
+                            break;
+                        }
+                        
                         if (option_2 < 1 || option_2 > 5)
                         {
                             printf("輸入錯誤，請輸入資源代碼(1-5)！\n");
@@ -420,8 +501,18 @@ int use_develop_card(Player *player_list, int player)
                     while (1)
                     {
                         int option_2 = 0;
-                        printf("請選擇您要拿取的第一張資源卡\n（1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
-                        scanf("%d", &option_2);
+                        while (1)
+                        {
+                            printf("請選擇您要拿取的第一張資源卡\n（1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
+                            if (scanf("%d", &option_2) != 1)
+                            {
+                                while (getchar() != '\n');
+                                continue;
+                            }
+                            while (getchar() != '\n');
+                            break;
+                        }
+                        
                         if (option_2 < 1 || option_2 > 5)
                         {
                             printf("輸入錯誤，請輸入資源代碼(1-5)！\n");
@@ -440,8 +531,18 @@ int use_develop_card(Player *player_list, int player)
                     while (1)
                     {
                         int option_2 = 0;
-                        printf("請選擇您要拿取的第二張資源卡\n（1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
-                        scanf("%d", &option_2);
+                        while (1)
+                        {
+                            printf("請選擇您要拿取的第二張資源卡\n（1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
+                            if (scanf("%d", &option_2) != 1)
+                            {
+                                while (getchar() != '\n');
+                                continue;
+                            }
+                            while (getchar() != '\n');
+                            break;
+                        }
+                        
                         if (system_setting.bank_resource[option_2 - 1] < 1)
                         {
                             printf("銀行的%s不足，請選擇其它資源！\n", resource_name[option_2 - 1]);
@@ -470,11 +571,30 @@ int use_develop_card(Player *player_list, int player)
     }
     
     // Computer
-    #if WINDOWS
-    option = rand() % 20;
-    #else
-    option = arc4random_uniform(19);
-    #endif
+    switch (player_list[player].NPC_difficulty)
+    {
+        case 1:
+            for (int i = 0; i < 1000; i++)
+            {
+                #if WINDOWS
+                option = rand() % 20;
+                #else
+                option = arc4random_uniform(19);
+                #endif
+                if (player_list[player].develop_cards[option] == 1)
+                {
+                    break;
+                }
+            }
+            break;
+        case 2:
+            #if WINDOWS
+            option = rand() % 20;
+            #else
+            option = arc4random_uniform(19);
+            #endif
+            break;
+    }
     
     int option_2 = 0;
     if (player_list[player].develop_cards[option] == 1)
