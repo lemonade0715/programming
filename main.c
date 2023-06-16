@@ -94,8 +94,96 @@ int production(Player *player_list, int player)
 
 int trade(Player *player_list, int player)
 {
-    
-    
+    if (player == 0)
+    {
+        while (1)
+        {
+            int option = 0;
+            printf("你要和誰交易？\n（0為放棄交易，1-%d為其它玩家，%d為與銀行交易，%d選擇擁有的港口交易）：", system_setting.player_num - 1, system_setting.player_num, system_setting.player_num + 1);
+            scanf("%d", &option);
+            if (option == 0)
+            {
+                printf("交易階段結束\n");
+                return 0;
+            }
+            else if (option > 0 && option < system_setting.player_num)
+            {
+                // Trade with other players
+            }
+            else if (option == system_setting.player_num)
+            {
+                while (1)
+                {
+                    int option_2 = 0;
+                    printf("你想要用哪個資源兌換？(4:1交易)\n（0.放棄 1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
+                    scanf("%d", &option_2);
+                    if (option_2 == 0)
+                    {
+                        break;
+                    }
+                    else if (option_2 > 0 && option_2 < 6)
+                    {
+                        if (player_list[player].resource[option_2 - 1] < 4)
+                        {
+                            printf("您的%s只有%d個，需要4個才能進行與銀行的交易！\n", resource_name[option_2 - 1], player_list[player].resource[option_2 - 1]);
+                            continue;
+                        }
+                        while (1)
+                        {
+                            int option_3 = 0;
+                            printf("你有%d個%s，請問您想兌換成哪種資源？(4:1交易)\n（0.放棄 1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：", player_list[player].resource[option_2 - 1], resource_name[option_2 - 1]);
+                            scanf("%d", &option_3);
+                            if (option_3 == 0)
+                            {
+                                break;
+                            }
+                            else if (option_3 > 0 && option_3 < 6)
+                            {
+                                if (system_setting.bank_resource[option_3 - 1] < 1)
+                                {
+                                    printf("銀行的%s不足，請選擇其它資源！\n", resource_name[option_3 - 1]);
+                                    continue;
+                                }
+                                player_list[player].resource[option_2 - 1] -= 4;
+                                system_setting.bank_resource[option_2 - 1] += 4;
+                                system_setting.bank_resource[option_3 - 1] -= 1;
+                                player_list[player].resource[option_3 - 1] += 1;
+                                printf("交易成功！\n")
+                                option_2 = -1;
+                                break;
+                            }
+                            else
+                            {
+                                printf("請輸入0-5之間的值！\n");
+                                continue;
+                            }
+                        }
+                        
+                        if (option_2 == -1)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        printf("請輸入0-5之間的值！\n");
+                        continue;
+                    }
+                }
+            }
+            else if (option == system_setting.player_num + 1)
+            {
+                // 確認是否有港口
+            }
+            else
+            {
+                printf("請輸入0-%d之間的值！\n", system_setting.player_num + 1);
+                continue;
+            }
+        }
+    }
+    // else:
+    // TODO: computer player
     
     return 0;
 }

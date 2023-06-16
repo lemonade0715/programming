@@ -8,7 +8,16 @@
 #define NUM_TILES 19  // 板塊的總數量
 #define WIN_SCORE = 10;
 
-enum {WHEAT = 1, WOOD, WOOL, STONE, BRICK};
+typedef enum Resource
+{
+    WHEAT = 1,
+    WOOD,
+    WOOL,
+    STONE,
+    BRICK
+} resource;
+
+const char resource_name[][5] = {"小麥", "木頭", "羊毛", "石頭", "磚頭"};
 
 struct  _player {
     int32_t resource[5]; // not show to other players
