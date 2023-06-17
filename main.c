@@ -686,6 +686,8 @@ int robber(Player *player_list, int player)
                 printf("您已從玩家%d搶奪1個%s！\n", option, resource_name[i]);
                 player_list[option].resource[i] -= 1;
                 player_list[player].resource[i] += 1;
+                player_list[option].total_resource -= 1;
+                player_list[player].total_resource += 1;
                 break;
             }
             temp_rob -= player_list[option].resource[i];
@@ -846,6 +848,8 @@ int use_develop_card(Player *player_list, int player)
                                         printf("玩家%d已從玩家%d搶奪1個%s！\n", player, option, resource_name[i]);
                                         player_list[option].resource[i] -= 1;
                                         player_list[player].resource[i] += 1;
+                                        player_list[option].total_resource -= 1;
+                                        player_list[player].total_resource += 1;
                                         break;
                                     }
                                     temp_rob -= player_list[option].resource[i];
@@ -903,6 +907,8 @@ int use_develop_card(Player *player_list, int player)
                                     printf("您已從玩家%d搶奪1個%s！\n", option, resource_name[i]);
                                     player_list[option].resource[i] -= 1;
                                     player_list[player].resource[i] += 1;
+                                    player_list[option].total_resource -= 1;
+                                    player_list[player].total_resource += 1;
                                     break;
                                 }
                                 temp_rob -= player_list[option].resource[i];
@@ -1141,6 +1147,8 @@ int use_develop_card(Player *player_list, int player)
                             printf("玩家%d已從玩家%d搶奪1個%s！\n", player, option, resource_name[i]);
                             player_list[option].resource[i] -= 1;
                             player_list[player].resource[i] += 1;
+                            player_list[option].total_resource -= 1;
+                            player_list[player].total_resource += 1;
                             break;
                         }
                         temp_rob -= player_list[option].resource[i];
@@ -1198,6 +1206,8 @@ int use_develop_card(Player *player_list, int player)
                         printf("您已從玩家%d搶奪1個%s！\n", option, resource_name[i]);
                         player_list[option].resource[i] -= 1;
                         player_list[player].resource[i] += 1;
+                        player_list[option].total_resource -= 1;
+                        player_list[player].total_resource += 1;
                         break;
                     }
                     temp_rob -= player_list[option].resource[i];
