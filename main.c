@@ -46,6 +46,7 @@ int trade(Player *player_list, int player);
 int build(Player *player_list, int player);
 int robber(Player *player_list, int player);
 int use_develop_card(Player *player_list, int player);
+void init_player(Player *players, System *system_setting);
 
 int main()
 {
@@ -58,7 +59,8 @@ int main()
 
     int current_player = 0;
     // TODO: Some Initialization
-    
+    init_player(player_list, &system_setting);
+
     srand(time(NULL));
     game_state = State_Production;
     
@@ -70,8 +72,9 @@ int main()
             player_list[i].is_used_develop_card = 0;
             player_list[i].new_develop_card = -1;
         }
+        int robber_loc = robber_location(tiles);
+        print_map_state(player_list, tiles, &system_setting, robber_loc);
         //
-        print_map_state(player_list, tiles, &system_setting);
         
         sleep(1);
         printf("\n\033[1m【玩家%d - 收成階段】\033[0m\n", current_player);
@@ -497,17 +500,6 @@ int robber(Player *player_list, int player)
     {
         while (1)
         {
-            while (1)
-            {
-                printf("請選擇您要將強盜移動至：");
-                if (scanf("%d", &robber_position) != 1)
-                {
-                    while (getchar() != '\n');
-                    continue;
-                }
-                while (getchar() != '\n');
-                break;
-            }
             while (1)
             {
                 printf("請選擇您要將強盜移動至：");
@@ -1257,4 +1249,32 @@ int use_develop_card(Player *player_list, int player)
         }
     }
     return 0;
+}
+
+
+void init_player(Player *players, System *system_setting){
+    for(int32_t i = 0; i < system_setting->player_num; ++i){
+        for(int32_t j = 0; j < MAX_VILLAGES; ++j){
+            players[i].village[j] = -1;
+        }
+        for(int32_t j = 0; j < MAX_CITIES; ++j){
+            players[i].city[j] = -1;
+        }
+        for(int32_t j = 0; j < MAX_ROADS; ++j){
+            players[i].road[j][0] = -1;
+            players[i].road[j][1] = -1;
+        }
+        for(int32_t j = 0; j < 5; ++j){
+            players[i].resource[j] = 0;
+        }
+        for(int32_t j = 0; j < 25; ++j){
+            players[i].develop_cards[j] = 0;
+        }
+        players[i].total_resource = 0;
+        players[i].num_roads = 0;
+        players[i].is_longest = 0;
+        
+        players[i].NPC_difficulty = 0;
+        if(!i)  players[i].NPC_difficulty = 2;
+    }
 }

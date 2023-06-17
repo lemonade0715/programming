@@ -7,7 +7,7 @@
 
 
 void print_map_point(Player *player, struct CatanTile *tiles, System *sys);
-void print_map_state(Player *player, struct CatanTile *tiles, System *sys);
+void print_map_state(Player *player, struct CatanTile *tiles, System *sys, int robber_loc);
 
 
 #endif

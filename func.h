@@ -60,6 +60,7 @@ extern int connectedPoint[55][3];
 
 //
 
+int robber_location(struct CatanTile* tiles);
 void generateCatanTiles(struct CatanTile* tiles);
 void printCatanTiles(struct CatanTile* tiles);
 void shuffleResource(enum ResourceType* array, int length);

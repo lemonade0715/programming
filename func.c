@@ -363,3 +363,12 @@ void add_road_to_player(Player *playlist, int currentPlayer, int p1, int p2) {
             }
     }
 }
+
+int robber_location(struct CatanTile* tiles){
+    for(int i = 0; i < 19; ++i){
+        if(tiles[i].hasRobber == 1){
+            return i;
+        }
+    }
+    return -1;
+}

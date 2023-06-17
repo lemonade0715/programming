@@ -5,6 +5,7 @@
 #include "func.h"
 #include "system.h"
 #include "map.h"
+#include "color.h"
 
 void print_map_point2(Player *player, struct CatanTile *tiles, System *sys){
     char road[73][15] = { 
@@ -92,12 +93,13 @@ void print_map_point2(Player *player, struct CatanTile *tiles, System *sys){
     printf("              磚頭              %s        %s                                \n", road[70], road[71]);
     printf("                                 %s%s%s                                  \n", num[52], road[72], num[53]);
     printf("                                  \\    /                                  \n");
-    printf("                                   3:1                                     \n");
+    printf("                                   3:1               ");
+    printf(YELLOW"盜賊現在位置:      \n"NONE);
     printf("                                                                           \n");
 
 }
 
-void print_map_state(Player *player, struct CatanTile *tiles, System *sys){
+void print_map_state(Player *player, struct CatanTile *tiles, System *sys, int robber_loc){
     char road[73][15] = { 
                 "" ,  "----", 
                         "/", "\\",
@@ -210,9 +212,9 @@ void print_map_state(Player *player, struct CatanTile *tiles, System *sys){
     printf("                              %s%s%s                            \n", num[52], road[72], num[53]);
     printf("                                  \\    /                               ");
     printf("                                  \\    /                          \n");
-    printf("                                   3:1                                  ");
-    printf("                                  3:1                              \n");
-    printf("                                                                    \n");
+    printf("                                   3:1                       ");
+    printf(YELLOW"盜賊位置: %d"NONE, robber_loc);
+    printf("                                 3:1    \n");
 
 }
 
