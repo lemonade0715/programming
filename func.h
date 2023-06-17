@@ -45,13 +45,13 @@ enum ResourceType { // 宣告六種版塊類型
     Desert
 };
 
-struct CatanTile { // 定義每個版塊內容
-    enum ResourceType resourceType; //類型
-    char typeName[19]; // 類型名稱
-    int number;        // 分配到的數字指示物
-    int hasRobber;     // 是否有盜賊
+struct CatanTile {      // 定義每個版塊內容
+    enum ResourceType resourceType; // 類型
+    char typeName[19];  // 類型名稱
+    int number;         // 分配到的數字指示物
+    int hasRobber;      // 是否有盜賊
     
-    int corner_id[6];
+    int corner_id[6];   // 頂點編號
     int has_village[6]; // 0: no village, 1: village, 2: city
 };
 
