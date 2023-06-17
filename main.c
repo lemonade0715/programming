@@ -50,6 +50,7 @@ int use_develop_card(Player *player_list, int player);
 void init_player(Player *players, System *system_setting);
 void set_village(Player *players, System *system_setting, struct CatanTile *tiles);
 int is_has_built(Player *players, int point_id);
+int connect_village_limit(Player *players, int point_id);
 
 int main()
 {
@@ -1293,6 +1294,27 @@ int is_has_built(Player *players, int point_id){
     return 0;
 }
 
+// 1: 相連村莊或城市，0: 沒有相連
+int connect_village_limit(Player *players, int point_id){
+    for(int32_t i = 0; i < system_setting.player_num; ++i){
+        for(int32_t j = 0; j < MAX_VILLAGES; ++j)
+        {
+            if(players[i].village[j] == connectedPoint[point_id][0] || players[i].village[j] == connectedPoint[point_id][1] 
+                                    || players[i].village[j] == connectedPoint[point_id][2]){
+                return 1;
+            }
+        }
+        for(int32_t j = 0; j < MAX_CITIES; ++j)
+        {
+            if(players[i].city[j] == connectedPoint[point_id][0] || players[i].city[j] == connectedPoint[point_id][1] 
+                                    || players[i].city[j] == connectedPoint[point_id][2]){
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
 void set_village(Player *players, System *sys, struct CatanTile *tiles){
     int option = 0;
     for(int32_t i = 0; i < sys->player_num; ++i){
@@ -1319,14 +1341,7 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
                 if(tiles[j].resourceType != Forest && tiles[j].resourceType != Hill){
                     continue;
                 }
-                // for(int32_t k = 0; k < MAX_VILLAGES; ++k){
-                //     if(players[i].village[k] == 0){
-                //         players[i].village[k] = tiles[j].corner_id[5];
-                //         printf("玩家%d在%d號板塊建造了村莊！\n", i, tiles[j].corner_id[5]);
-                //         break;
-                //     }
-                // }
-                if( is_has_built(players, tiles[j].corner_id[5]) ){
+                if( is_has_built(players, tiles[j].corner_id[5])  && !connect_village_limit(players, tiles[j].corner_id[5])){
                     build_village(players, i, tiles[j].corner_id[5]);
                 }
             }
@@ -1342,16 +1357,12 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
                 if(is_has_built(players, random_point)){
                     continue;
                 }
+                if(connect_village_limit(players, random_point)){
+                    continue;;
+                }
                 break;
             }
 
-            // for(int32_t j = 0; j < MAX_VILLAGES; ++j){
-            //     if(players[i].village[j] == 0){
-            //         players[i].village[j] = random_point;
-            //         printf("玩家%d在%d號板塊建造了村莊！\n", i, random_point);
-            //         break;
-            //     }
-            // }
             build_village(players, i, random_point);
         }
     }
@@ -1374,6 +1385,10 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
                     printf("此處已經有村莊或城市了！\n");
                     continue;
                 }
+                if(connect_village_limit(players, option)){
+                    printf("新建的村莊或城市不能與其他村莊或城市相鄰！\n");
+                    continue;
+                }
                 break;
             }
             build_village(players, i, option);
@@ -1386,6 +1401,9 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
                     continue;
                 }
                 if(is_has_built(players, tiles[j].corner_id[5])){
+                    continue;
+                }
+                if(connect_village_limit(players, tiles[j].corner_id[5])){
                     continue;
                 }
                 build_village(players, i, tiles[j].corner_id[5]);
