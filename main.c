@@ -159,11 +159,11 @@ int production(Player *player_list, int player)
                         }
                         for (int l = 0; l < MAX_CITIES; l++)
                         {
-                            if (player_list[j].village[l] == 0 || tiles[i].corner_id[k] == 0)
+                            if (player_list[j].city[l] == 0 || tiles[i].corner_id[k] == 0)
                             {
                                 continue;
                             }
-                            if (player_list[j].village[l] == tiles[i].corner_id[k])
+                            if (player_list[j].city[l] == tiles[i].corner_id[k])
                             {
                                 printf("玩家%d的城市(%d)收穫2個%s！\n", j, player_list[j].city[l], resource_name[tiles[i].resourceType]);
                                 player_list[j].resource[tiles[i].resourceType] += 2;
