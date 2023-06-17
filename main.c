@@ -602,8 +602,13 @@ int robber(Player *player_list, int player)
             #else
             option = arc4random_uniform(system_setting.player_num - 1);
             #endif
-        
-            if (option == player || robbable_players[option] == 0)
+            
+            if (robbable_players[0] + robbable_players[1] + robbable_players[2] + robbable_players[3] == 0)
+            {
+                printf("沒有可搶奪的玩家！\n");
+                return 0;
+            }
+            else if (option == player || robbable_players[option] == 0)
             {
                 continue;
             }
@@ -788,11 +793,11 @@ int use_develop_card(Player *player_list, int player)
                             {
                                 for (int k = 0; k < MAX_VILLAGES; k++)
                                 {
-                                    robbable_players[i] += (player_list[player].village[k] == tiles[robber_position].corner_id[j]) ? 1 : 0;
+                                    robbable_players[i] += (player_list[i].village[k] == tiles[robber_position].corner_id[j]) ? 1 : 0;
                                 }
                                 for (int k = 0; k < MAX_CITIES; k++)
                                 {
-                                    robbable_players[i] += (player_list[player].city[k] == tiles[robber_position].corner_id[j]) ? 1 : 0;
+                                    robbable_players[i] += (player_list[i].city[k] == tiles[robber_position].corner_id[j]) ? 1 : 0;
                                 }
                             }
                         }
@@ -1083,11 +1088,11 @@ int use_develop_card(Player *player_list, int player)
                 {
                     for (int k = 0; k < MAX_VILLAGES; k++)
                     {
-                        robbable_players[i] += (player_list[player].village[k] == tiles[robber_position].corner_id[j]) ? 1 : 0;
+                        robbable_players[i] += (player_list[i].village[k] == tiles[robber_position].corner_id[j]) ? 1 : 0;
                     }
                     for (int k = 0; k < MAX_CITIES; k++)
                     {
-                        robbable_players[i] += (player_list[player].city[k] == tiles[robber_position].corner_id[j]) ? 1 : 0;
+                        robbable_players[i] += (player_list[i].city[k] == tiles[robber_position].corner_id[j]) ? 1 : 0;
                     }
                 }
             }
