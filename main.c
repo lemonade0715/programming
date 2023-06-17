@@ -550,7 +550,7 @@ int robber(Player *player_list, int player)
             option = arc4random_uniform(system_setting.player_num - 1);
             #endif
         
-            else if (option == player || robbable_players[option] == 0)
+            if (option == player || robbable_players[option] == 0)
             {
                 continue;
             }
@@ -566,7 +566,7 @@ int robber(Player *player_list, int player)
             {
                 if (temp_rob < player_list[option].resource[i])
                 {
-                    printf("玩家%d已從玩家%d搶奪1個%s！\n", player, option, resource_name[i])
+                    printf("玩家%d已從玩家%d搶奪1個%s！\n", player, option, resource_name[i]);
                     player_list[option].resource[i] -= 1;
                     player_list[player].resource[i] += 1;
                     break;
@@ -598,7 +598,7 @@ int robber(Player *player_list, int player)
         while (getchar() != '\n');
         if (option < 0 || option >= system_setting.player_num)
         {
-            printf("請輸入0~%d之間的值！\n", system_setting - 1);
+            printf("請輸入0~%d之間的值！\n", system_setting.player_num - 1);
             continue;
         }
         else if (option == player)
@@ -623,7 +623,7 @@ int robber(Player *player_list, int player)
         {
             if (temp_rob < player_list[option].resource[i])
             {
-                printf("您已從玩家%d搶奪1個%s！\n", option, resource_name[i])
+                printf("您已從玩家%d搶奪1個%s！\n", option, resource_name[i]);
                 player_list[option].resource[i] -= 1;
                 player_list[player].resource[i] += 1;
                 break;
@@ -767,7 +767,7 @@ int use_develop_card(Player *player_list, int player)
                                 option = arc4random_uniform(system_setting.player_num - 1);
                                 #endif
                             
-                                else if (option == player || robbable_players[option] == 0)
+                                if (option == player || robbable_players[option] == 0)
                                 {
                                     continue;
                                 }
@@ -783,7 +783,7 @@ int use_develop_card(Player *player_list, int player)
                                 {
                                     if (temp_rob < player_list[option].resource[i])
                                     {
-                                        printf("玩家%d已從玩家%d搶奪1個%s！\n", player, option, resource_name[i])
+                                        printf("玩家%d已從玩家%d搶奪1個%s！\n", player, option, resource_name[i]);
                                         player_list[option].resource[i] -= 1;
                                         player_list[player].resource[i] += 1;
                                         break;
@@ -815,7 +815,7 @@ int use_develop_card(Player *player_list, int player)
                             while (getchar() != '\n');
                             if (option < 0 || option >= system_setting.player_num)
                             {
-                                printf("請輸入0~%d之間的值！\n", system_setting - 1);
+                                printf("請輸入0~%d之間的值！\n", system_setting.player_num - 1);
                                 continue;
                             }
                             else if (option == player)
@@ -840,7 +840,7 @@ int use_develop_card(Player *player_list, int player)
                             {
                                 if (temp_rob < player_list[option].resource[i])
                                 {
-                                    printf("您已從玩家%d搶奪1個%s！\n", option, resource_name[i])
+                                    printf("您已從玩家%d搶奪1個%s！\n", option, resource_name[i]);
                                     player_list[option].resource[i] -= 1;
                                     player_list[player].resource[i] += 1;
                                     break;
@@ -1062,7 +1062,7 @@ int use_develop_card(Player *player_list, int player)
                     option = arc4random_uniform(system_setting.player_num - 1);
                     #endif
                 
-                    else if (option == player || robbable_players[option] == 0)
+                    if (option == player || robbable_players[option] == 0)
                     {
                         continue;
                     }
@@ -1078,7 +1078,7 @@ int use_develop_card(Player *player_list, int player)
                     {
                         if (temp_rob < player_list[option].resource[i])
                         {
-                            printf("玩家%d已從玩家%d搶奪1個%s！\n", player, option, resource_name[i])
+                            printf("玩家%d已從玩家%d搶奪1個%s！\n", player, option, resource_name[i]);
                             player_list[option].resource[i] -= 1;
                             player_list[player].resource[i] += 1;
                             break;
@@ -1110,7 +1110,7 @@ int use_develop_card(Player *player_list, int player)
                 while (getchar() != '\n');
                 if (option < 0 || option >= system_setting.player_num)
                 {
-                    printf("請輸入0~%d之間的值！\n", system_setting - 1);
+                    printf("請輸入0~%d之間的值！\n", system_setting.player_num - 1);
                     continue;
                 }
                 else if (option == player)
@@ -1135,7 +1135,7 @@ int use_develop_card(Player *player_list, int player)
                 {
                     if (temp_rob < player_list[option].resource[i])
                     {
-                        printf("您已從玩家%d搶奪1個%s！\n", option, resource_name[i])
+                        printf("您已從玩家%d搶奪1個%s！\n", option, resource_name[i]);
                         player_list[option].resource[i] -= 1;
                         player_list[player].resource[i] += 1;
                         break;
