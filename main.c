@@ -505,10 +505,133 @@ int robber(Player *player_list, int player)
     // 移動強盜，更新強盜位置
     tiles[robber_position_prev].hasRobber = 0;
     tiles[robber_position].hasRobber = 1;
-    printf("強盜已經被玩家%d玩家%d移動至板塊%d！\n", player, player, robber_position);
+    printf("強盜已經被玩家%d移動至板塊%d！\n", player, robber_position);
     
-    // TODO: 搶奪資源
+    // 搶奪資源
+    int robbable_players[4] = {0};
     
+    for (int i = 0; i < system_setting.player_num; i++)
+    {
+        for (int j = 0; j < 6; j++)
+        {
+            for (int k = 0; k < MAX_VILLAGES; k++)
+            {
+                robbable_players[i] += (player_list[player].village[k] == tiles[robber_position].corner_id[j]) ? 1 : 0;
+            }
+            for (int k = 0; k < MAX_CITIES; k++)
+            {
+                robbable_players[i] += (player_list[player].city[k] == tiles[robber_position].corner_id[j]) ? 1 : 0;
+            }
+        }
+    }
+    robbable_players[player] = 0; // 不能搶自己
+    // 不能搶沒有資源的人
+    for (int i = 0; i < system_setting.player_num; i++)
+    {
+        if (player_list[i].total_resource < 1)
+        {
+            robbable_players[i] = 0;
+        }
+    }
+    if (robbable_players[0] + robbable_players[1] + robbable_players[2] + robbable_players[3] == 0)
+    {
+        printf("板塊%d附近沒有村莊或城市！\n", robber_position);
+        return 0;
+    }
+    
+    if (player != 0)
+    {
+        while (1)
+        {
+            int option = 0;
+            #if WINDOWS
+            option = rand() % system_setting.player_num;
+            #else
+            option = arc4random_uniform(system_setting.player_num - 1);
+            #endif
+        
+            else if (option == player || robbable_players[option] == 0)
+            {
+                continue;
+            }
+            // 搶奪該位玩家的資源卡
+            int temp_rob;
+            #if WINDOWS
+            temp_rob = rand() % player_list[option].total_resource;
+            #else
+            temp_rob = arc4random_uniform(player_list[option].total_resource - 1);
+            #endif
+            
+            for (int i = 0; i < 5; i++)
+            {
+                if (temp_rob < player_list[option].resource[i])
+                {
+                    printf("玩家%d已從玩家%d搶奪1個%s！\n", player, option, resource_name[i])
+                    player_list[option].resource[i] -= 1;
+                    player_list[player].resource[i] += 1;
+                    break;
+                }
+                temp_rob -= player_list[option].resource[i];
+            }
+            break;
+        }
+        return 0;
+    }
+    // 人類玩家
+    printf("您可以搶奪資源卡的玩家：\n");
+    for (int i = 0; i < 4; i++)
+    {
+        if (robbable_players[i])
+        {
+            printf("%d. 玩家%d,\t", i, i);
+        }
+    }
+    while (1)
+    {
+        int option = 0;
+        printf("請問您要搶奪哪一位玩家？");
+        if (scanf("%d", &option) != 1)
+        {
+            while (getchar() != '\n');
+            continue;
+        }
+        while (getchar() != '\n');
+        if (option < 0 || option >= system_setting.player_num)
+        {
+            printf("請輸入0~%d之間的值！\n", system_setting - 1);
+            continue;
+        }
+        else if (option == player)
+        {
+            printf("不能搶奪自己的資源卡！\n");
+            continue;
+        }
+        else if (robbable_players[option] == 0)
+        {
+            printf("該位玩家在強盜所在板塊的附近沒有村莊或城市！\n");
+            continue;
+        }
+        // 搶奪該位玩家的資源卡
+        int temp_rob;
+        #if WINDOWS
+        temp_rob = rand() % player_list[option].total_resource;
+        #else
+        temp_rob = arc4random_uniform(player_list[option].total_resource - 1);
+        #endif
+        
+        for (int i = 0; i < 5; i++)
+        {
+            if (temp_rob < player_list[option].resource[i])
+            {
+                printf("您已從玩家%d搶奪1個%s！\n", option, resource_name[i])
+                player_list[option].resource[i] -= 1;
+                player_list[player].resource[i] += 1;
+                break;
+            }
+            temp_rob -= player_list[option].resource[i];
+        }
+        break;
+    }
     return 0;
 }
 
@@ -601,8 +724,131 @@ int use_develop_card(Player *player_list, int player)
                         tiles[robber_position].hasRobber = 1;
                         printf("強盜已經被移動至板塊%d！\n", robber_position);
                         
-                        // TODO: 搶奪資源
+                        // 搶奪資源
+                        int robbable_players[4] = {0};
                         
+                        for (int i = 0; i < system_setting.player_num; i++)
+                        {
+                            for (int j = 0; j < 6; j++)
+                            {
+                                for (int k = 0; k < MAX_VILLAGES; k++)
+                                {
+                                    robbable_players[i] += (player_list[player].village[k] == tiles[robber_position].corner_id[j]) ? 1 : 0;
+                                }
+                                for (int k = 0; k < MAX_CITIES; k++)
+                                {
+                                    robbable_players[i] += (player_list[player].city[k] == tiles[robber_position].corner_id[j]) ? 1 : 0;
+                                }
+                            }
+                        }
+                        robbable_players[player] = 0; // 不能搶自己
+                        // 不能搶沒有資源的人
+                        for (int i = 0; i < system_setting.player_num; i++)
+                        {
+                            if (player_list[i].total_resource < 1)
+                            {
+                                robbable_players[i] = 0;
+                            }
+                        }
+                        if (robbable_players[0] + robbable_players[1] + robbable_players[2] + robbable_players[3] == 0)
+                        {
+                            printf("板塊%d附近沒有村莊或城市！\n", robber_position);
+                            return 0;
+                        }
+                        
+                        if (player != 0)
+                        {
+                            while (1)
+                            {
+                                int option = 0;
+                                #if WINDOWS
+                                option = rand() % system_setting.player_num;
+                                #else
+                                option = arc4random_uniform(system_setting.player_num - 1);
+                                #endif
+                            
+                                else if (option == player || robbable_players[option] == 0)
+                                {
+                                    continue;
+                                }
+                                // 搶奪該位玩家的資源卡
+                                int temp_rob;
+                                #if WINDOWS
+                                temp_rob = rand() % player_list[option].total_resource;
+                                #else
+                                temp_rob = arc4random_uniform(player_list[option].total_resource - 1);
+                                #endif
+                                
+                                for (int i = 0; i < 5; i++)
+                                {
+                                    if (temp_rob < player_list[option].resource[i])
+                                    {
+                                        printf("玩家%d已從玩家%d搶奪1個%s！\n", player, option, resource_name[i])
+                                        player_list[option].resource[i] -= 1;
+                                        player_list[player].resource[i] += 1;
+                                        break;
+                                    }
+                                    temp_rob -= player_list[option].resource[i];
+                                }
+                                break;
+                            }
+                            return 0;
+                        }
+                        // 人類玩家
+                        printf("您可以搶奪資源卡的玩家：\n");
+                        for (int i = 0; i < 4; i++)
+                        {
+                            if (robbable_players[i])
+                            {
+                                printf("%d. 玩家%d,\t", i, i);
+                            }
+                        }
+                        while (1)
+                        {
+                            int option = 0;
+                            printf("請問您要搶奪哪一位玩家？");
+                            if (scanf("%d", &option) != 1)
+                            {
+                                while (getchar() != '\n');
+                                continue;
+                            }
+                            while (getchar() != '\n');
+                            if (option < 0 || option >= system_setting.player_num)
+                            {
+                                printf("請輸入0~%d之間的值！\n", system_setting - 1);
+                                continue;
+                            }
+                            else if (option == player)
+                            {
+                                printf("不能搶奪自己的資源卡！\n");
+                                continue;
+                            }
+                            else if (robbable_players[option] == 0)
+                            {
+                                printf("該位玩家在強盜所在板塊的附近沒有村莊或城市！\n");
+                                continue;
+                            }
+                            // 搶奪該位玩家的資源卡
+                            int temp_rob;
+                            #if WINDOWS
+                            temp_rob = rand() % player_list[option].total_resource;
+                            #else
+                            temp_rob = arc4random_uniform(player_list[option].total_resource - 1);
+                            #endif
+                            
+                            for (int i = 0; i < 5; i++)
+                            {
+                                if (temp_rob < player_list[option].resource[i])
+                                {
+                                    printf("您已從玩家%d搶奪1個%s！\n", option, resource_name[i])
+                                    player_list[option].resource[i] -= 1;
+                                    player_list[player].resource[i] += 1;
+                                    break;
+                                }
+                                temp_rob -= player_list[option].resource[i];
+                            }
+                            break;
+                        }
                         break;
                     }
                 }
@@ -773,8 +1019,131 @@ int use_develop_card(Player *player_list, int player)
             tiles[robber_position].hasRobber = 1;
             printf("強盜已經被移動至板塊%d！\n", robber_position);
             
-            // TODO: 搶奪資源
+            // 搶奪資源
+            int robbable_players[4] = {0};
             
+            for (int i = 0; i < system_setting.player_num; i++)
+            {
+                for (int j = 0; j < 6; j++)
+                {
+                    for (int k = 0; k < MAX_VILLAGES; k++)
+                    {
+                        robbable_players[i] += (player_list[player].village[k] == tiles[robber_position].corner_id[j]) ? 1 : 0;
+                    }
+                    for (int k = 0; k < MAX_CITIES; k++)
+                    {
+                        robbable_players[i] += (player_list[player].city[k] == tiles[robber_position].corner_id[j]) ? 1 : 0;
+                    }
+                }
+            }
+            robbable_players[player] = 0; // 不能搶自己
+            // 不能搶沒有資源的人
+            for (int i = 0; i < system_setting.player_num; i++)
+            {
+                if (player_list[i].total_resource < 1)
+                {
+                    robbable_players[i] = 0;
+                }
+            }
+            if (robbable_players[0] + robbable_players[1] + robbable_players[2] + robbable_players[3] == 0)
+            {
+                printf("板塊%d附近沒有村莊或城市！\n", robber_position);
+                return 0;
+            }
+            
+            if (player != 0)
+            {
+                while (1)
+                {
+                    int option = 0;
+                    #if WINDOWS
+                    option = rand() % system_setting.player_num;
+                    #else
+                    option = arc4random_uniform(system_setting.player_num - 1);
+                    #endif
+                
+                    else if (option == player || robbable_players[option] == 0)
+                    {
+                        continue;
+                    }
+                    // 搶奪該位玩家的資源卡
+                    int temp_rob;
+                    #if WINDOWS
+                    temp_rob = rand() % player_list[option].total_resource;
+                    #else
+                    temp_rob = arc4random_uniform(player_list[option].total_resource - 1);
+                    #endif
+                    
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (temp_rob < player_list[option].resource[i])
+                        {
+                            printf("玩家%d已從玩家%d搶奪1個%s！\n", player, option, resource_name[i])
+                            player_list[option].resource[i] -= 1;
+                            player_list[player].resource[i] += 1;
+                            break;
+                        }
+                        temp_rob -= player_list[option].resource[i];
+                    }
+                    break;
+                }
+                return 0;
+            }
+            // 人類玩家
+            printf("您可以搶奪資源卡的玩家：\n");
+            for (int i = 0; i < 4; i++)
+            {
+                if (robbable_players[i])
+                {
+                    printf("%d. 玩家%d,\t", i, i);
+                }
+            }
+            while (1)
+            {
+                int option = 0;
+                printf("請問您要搶奪哪一位玩家？");
+                if (scanf("%d", &option) != 1)
+                {
+                    while (getchar() != '\n');
+                    continue;
+                }
+                while (getchar() != '\n');
+                if (option < 0 || option >= system_setting.player_num)
+                {
+                    printf("請輸入0~%d之間的值！\n", system_setting - 1);
+                    continue;
+                }
+                else if (option == player)
+                {
+                    printf("不能搶奪自己的資源卡！\n");
+                    continue;
+                }
+                else if (robbable_players[option] == 0)
+                {
+                    printf("該位玩家在強盜所在板塊的附近沒有村莊或城市！\n");
+                    continue;
+                }
+                // 搶奪該位玩家的資源卡
+                int temp_rob;
+                #if WINDOWS
+                temp_rob = rand() % player_list[option].total_resource;
+                #else
+                temp_rob = arc4random_uniform(player_list[option].total_resource - 1);
+                #endif
+                
+                for (int i = 0; i < 5; i++)
+                {
+                    if (temp_rob < player_list[option].resource[i])
+                    {
+                        printf("您已從玩家%d搶奪1個%s！\n", option, resource_name[i])
+                        player_list[option].resource[i] -= 1;
+                        player_list[player].resource[i] += 1;
+                        break;
+                    }
+                    temp_rob -= player_list[option].resource[i];
+                }
+                break;
+            }
         }
         else if (option == 14 || option == 15) // 資源壟斷
         {
