@@ -8,30 +8,7 @@
 #define YELLOW "\033[1;33m"
 #define LIGHT_GRAY "\033[0;37m"
 #define NONE "\033[m"
-void red(){
-    printf("\033[31m");
-}
-void green(){
-    printf("\033[32m");
-}
-void yellow(){
-    printf("\033[33m");
-}
-void blue(){
-    printf("\033[34m");
-}
-void purple(){
-    printf("\033[35m");
-}
-void gray(){
-    printf("\033[2;37m");
-}
-void white(){
-    printf("\033[0;37m");
-}
-void reset(){
-    printf("\033[0m");
-}
+
 // https://chunchaichang.blogspot.com/2011/07/printf.html
 /*
 '1';33m -->1: 加粗
