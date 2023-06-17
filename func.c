@@ -144,7 +144,8 @@ int refresh(Player *player_list, System system_setting)
         }
     }
     
-    // TODO: Count road, village, city
+    // TODO: Count village, city
+    
     
     // TODO: Check longest road
     
@@ -170,18 +171,22 @@ int refresh(Player *player_list, System system_setting)
     for (int i = 0; i < system_setting.player_num; i++)
     {
         system_setting.player_score[i] = 0;
-        for(int j = 0; j < MAX_CITIES; j++)
+        
+        // Count Villages and Cities
+        for (int j = 0; j < MAX_VILLAGES; j++)
         {
-            system_setting.player_score[i] += (player_list[i].village[i] != 0);
+            system_setting.player_score[i] += (player_list[i].village[j] != 0);
         }
         for(int j = 0; j < MAX_CITIES; j++)
         {
-            system_setting.player_score[i] += (player_list[i].city[i] != 0);
+            system_setting.player_score[i] += (player_list[i].city[j] != 0);
         }
+        // Victory Point Cards
         for (int j = 20; j < 25; j++)
         {
             system_setting.player_score[i] += player_list[i].develop_cards[j];
         }
+        // Longest Road & Max Knight
         system_setting.player_score[i] += 2 * (system_setting.lr_player == i);
         system_setting.player_score[i] += 2 * (system_setting.mk_player == i);
         
