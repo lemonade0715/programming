@@ -332,7 +332,7 @@ int8_t check_if_connected_build(Player *playlist, int currentPlayer, int p1, int
     }
 
     // 判斷是否有連接在自己的建築上
-    for (int i = 0; i < MAX_SETTLEMENTS; ++i) {
+    for (int i = 0; i < MAX_VILLAGES; ++i) {
         if (p1 == player.village[i] || p2 == player.village[i]) {
             return 1;
         }
