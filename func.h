@@ -63,8 +63,9 @@ void shuffleNumbers(int* array, int length);
 //道路連接
 int8_t check_connected(int p1, int p2);
 int8_t check_if_has_road(Player *playlist, int p1, int p2);
-int8_t check_if_connected_build(Player *playlist, int currentPlayer, int p1, int p2);
-void add_road_to_player(Player *playlist, int currentPlayer, int p1, int p2);
+int8_t check_if_connected_build(Player *player, int p1, int p2);
+void add_road_to_player(Player *player, int p1, int p2);
+int max_connected_length(Player *player);
 //
 
 #endif
