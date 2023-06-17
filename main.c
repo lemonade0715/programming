@@ -568,11 +568,11 @@ int robber(Player *player_list, int player)
         {
             for (int k = 0; k < MAX_VILLAGES; k++)
             {
-                robbable_players[i] += (player_list[player].village[k] == tiles[robber_position].corner_id[j]) ? 1 : 0;
+                robbable_players[i] += (player_list[i].village[k] == tiles[robber_position].corner_id[j]);
             }
             for (int k = 0; k < MAX_CITIES; k++)
             {
-                robbable_players[i] += (player_list[player].city[k] == tiles[robber_position].corner_id[j]) ? 1 : 0;
+                robbable_players[i] += (player_list[i].city[k] == tiles[robber_position].corner_id[j]);
             }
         }
     }
@@ -621,6 +621,8 @@ int robber(Player *player_list, int player)
                     printf("玩家%d已從玩家%d搶奪1個%s！\n", player, option, resource_name[i]);
                     player_list[option].resource[i] -= 1;
                     player_list[player].resource[i] += 1;
+                    player_list[option].total_resource -= 1;
+                    player_list[player].total_resource += 1;
                     break;
                 }
                 temp_rob -= player_list[option].resource[i];
