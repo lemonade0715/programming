@@ -87,6 +87,7 @@ int main()
         game_state = State_Production;
         
         current_player = (current_player + 1) % system_setting.player_num;
+        printf("--------------------------------------------\n");
     }
     
     return 0;
@@ -131,7 +132,11 @@ int production(Player *player_list, int player)
                     {
                         for (int l = 0; l < MAX_VILLAGES; l++)
                         {
-                            if (player_list[j].village[l] == tiles[i].corner_id[k])
+                            if (player_list[j].village[l] == 0 || tiles[i].corner_id[k] == 0)
+                            {
+                                continue;
+                            }
+                            else if (player_list[j].village[l] == tiles[i].corner_id[k])
                             {
                                 printf("玩家%d的村莊(%d)收穫1個%s！\n", j, player_list[j].village[l], resource_name[tiles[i].resourceType]);
                                 player_list[j].resource[tiles[i].resourceType] += 1;
@@ -139,6 +144,10 @@ int production(Player *player_list, int player)
                         }
                         for (int l = 0; l < MAX_CITIES; l++)
                         {
+                            if (player_list[j].village[l] == 0 || tiles[i].corner_id[k] == 0)
+                            {
+                                continue;
+                            }
                             if (player_list[j].village[l] == tiles[i].corner_id[k])
                             {
                                 printf("玩家%d的城市(%d)收穫2個%s！\n", j, player_list[j].city[l], resource_name[tiles[i].resourceType]);
@@ -173,7 +182,7 @@ int trade(Player *player_list, int player)
             }
             if (option == 0)
             {
-                printf("交易階段結束\n");
+                printf("\n交易階段結束");
                 return 0;
             }
             else if (option > 0 && option < system_setting.player_num)
