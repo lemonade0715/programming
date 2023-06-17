@@ -11,7 +11,6 @@
 
 #define WINDOWS 0
 
-const char resource_name[][7] = {"小麥", "木頭", "羊毛", "石頭", "磚頭"};
 const char develop_card_name[][13] = {"騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "資源壟斷", "資源壟斷", "道路建設", "道路建設", "創新發明", "創新發明", "分數卡", "分數卡", "分數卡", "分數卡", "分數卡"};
 const int harbor[18] = {3, 4, 5, 6, 30, 36, 25, 31, 44, 49, 7, 13, 12, 18, 47, 52, 53, 54};
 const char harbor_name[][10] = {"小麥2:1", "小麥2:1", "木頭2:1", "木頭2:1", "羊毛2:1", "羊毛2:1", "石頭2:1", "石頭2:1", "磚頭2:1", "磚頭2:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1"};
@@ -192,6 +191,18 @@ int trade(Player *player_list, int player)
             else if (option > 0 && option < system_setting.player_num)
             {
                 // TODO: Trade with other players
+                int object_id = option;
+                printf("\n你想要用哪個資源與玩家%d進行兌換？可用任意數量\n（0.放棄 1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：", option);
+                if (scanf("%d", &option) != 1)
+                {
+                    while (getchar() != '\n');
+                    continue;
+                }
+                while (getchar() != '\n');
+
+                if(!option) continue;
+                else if(option < 0 || option > 5) printf("交易失敗，請輸入0-5之間的數值\n");
+                else trade_with_player(player_list, object_id, option);
             }
             else if (option == system_setting.player_num)
             {
@@ -442,7 +453,7 @@ int trade(Player *player_list, int player)
     }
     
     // TODO: computer player
-    computer_trade(player_list, player, &system_setting, tiles);
+    (player_list, player, &system_setting, tiles);
     return 0;
 }
 

@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+static const char resource_name[][7] = {"小麥", "木頭", "羊毛", "石頭", "磚頭"};
 
 struct _system {
     int32_t player_num;     // 3 or 4
