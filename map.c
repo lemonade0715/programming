@@ -132,8 +132,8 @@ void print_map_state(Player *player, struct CatanTile *tiles, System *sys, int r
     for(int32_t i = 0; i < 55; i++){
         num[i][0] = (char)( (i+1)/10 + '0');
         num[i][1] = (char)( (i+1)%10 + '0');
-        num_catan[i][0] = (char)( (i+1)/10 + '0');
-        num_catan[i][1] = (char)( (i+1)%10 + '0');
+        num_catan[i][0] = (char)( (i)/10 + '0');
+        num_catan[i][1] = (char)( (i)%10 + '0');
     }
     for(int32_t i = 0; i < 73; i++){
         num2[i][0] = (char)( (i+1)/10 + '0');
@@ -147,22 +147,22 @@ void print_map_state(Player *player, struct CatanTile *tiles, System *sys, int r
         num4[i][0] = (char)('*');
         num4[i][1] = (char)('*');
     }
-
-    for(int32_t i = 0; i < 55; ++i){
-        for(int32_t j = 0; j < MAX_VILLAGES; ++j){
-            if(i+1 == player->village[j]){
-                num[i][0] = '*';
-                num[i][1] = '*';
+    for(int32_t k = 0; k < sys->player_num; ++k){
+        for(int32_t i = 0; i < 55; ++i){
+            for(int32_t j = 0; j < MAX_VILLAGES; ++j){
+                if(i+1 == player[k].village[j]){
+                    num[i][0] = '*';
+                    num[i][1] = '*';
+                }
+            }
+            for(int32_t j = 0; j < MAX_CITIES; ++j){
+                if(i+1 == player[k].city[j]){
+                    num[i][0] = '*';
+                    num[i][1] = '*';
+                }
             }
         }
-        for(int32_t j = 0; j < MAX_CITIES; ++j){
-            if(i+1 == player->city[j]){
-                num[i][0] = '*';
-                num[i][1] = '*';
-            }
-        }
-    }
-    
+    }  
     printf("\n                                                                      \n");
     printf("                           小                木                         ");
     printf("                           小                木                             \n");

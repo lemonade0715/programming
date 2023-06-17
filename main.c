@@ -15,6 +15,7 @@ const char develop_card_name[][13] = {"騎士卡", "騎士卡", "騎士卡", "�
 const int harbor[18] = {3, 4, 5, 6, 30, 36, 25, 31, 44, 49, 7, 13, 12, 18, 47, 52, 53, 54};
 const char harbor_name[][10] = {"小麥2:1", "小麥2:1", "木頭2:1", "木頭2:1", "羊毛2:1", "羊毛2:1", "石頭2:1", "石頭2:1", "磚頭2:1", "磚頭2:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1"};
 const int harbor_type[18] = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6};
+int robber_loc = 0;
 
 typedef enum State
 {
@@ -47,6 +48,8 @@ int build(Player *player_list, int player);
 int robber(Player *player_list, int player);
 int use_develop_card(Player *player_list, int player);
 void init_player(Player *players, System *system_setting);
+void set_village(Player *players, System *system_setting, struct CatanTile *tiles);
+int is_has_built(Player *players, int point_id);
 
 int main()
 {
@@ -60,7 +63,10 @@ int main()
     int current_player = 0;
     // TODO: Some Initialization
     init_player(player_list, &system_setting);
+    robber_loc = robber_location(tiles);
 
+    print_map_state(player_list, tiles, &system_setting, robber_loc);
+    set_village(player_list, &system_setting, tiles);
     srand(time(NULL));
     game_state = State_Production;
     
@@ -72,8 +78,10 @@ int main()
             player_list[i].is_used_develop_card = 0;
             player_list[i].new_develop_card = -1;
         }
-        int robber_loc = robber_location(tiles);
-        print_map_state(player_list, tiles, &system_setting, robber_loc);
+        robber_loc = robber_location(tiles);
+        if(!current_player) {
+            print_map_state(player_list, tiles, &system_setting, robber_loc);
+        }
         //
         
         sleep(1);
@@ -456,7 +464,7 @@ int trade(Player *player_list, int player)
     }
     
     // TODO: computer player
-    (player_list, player, &system_setting, tiles);
+    computer_trade(player_list, player, &system_setting, tiles);
     return 0;
 }
 
@@ -1251,18 +1259,163 @@ int use_develop_card(Player *player_list, int player)
     return 0;
 }
 
+void build_village(Player *players, int player, int point_id){
+    for(int32_t j = 0; j < MAX_VILLAGES; ++j){
+        if(players[player].village[j] == 0){
+            players[player].village[j] = point_id;
+            if(!player)     printf("你在%d號板塊建造了村莊！\n", point_id);
+            else            printf("玩家%d在%d號板塊建造了村莊！\n", player, point_id);
+            break;
+        }
+    }
+}
+
+// 1: 有村莊或城市，0: 沒有村莊
+int is_has_built(Player *players, int point_id){
+    for(int32_t i = 0; i < system_setting.player_num; ++i){
+        for(int32_t j = 0; j < MAX_VILLAGES; ++j)
+        {
+            if(players[i].village[j] == point_id){
+                return 1;
+            }
+        }
+        for(int32_t j = 0; j < MAX_CITIES; ++j)
+        {
+            if(players[i].city[j] == point_id){
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+void set_village(Player *players, System *sys, struct CatanTile *tiles){
+    int option = 0;
+    for(int32_t i = 0; i < sys->player_num; ++i){
+        if(i == 0){
+            while(1){
+                printf("請選擇你想要建造村莊的位置：(1-54)\n");
+                if( scanf("%d", &option) != 1){
+                    while(getchar() != '\n');
+                    continue;
+                }
+                while(getchar() != '\n');
+                if(option < 1 || option > 54){
+                    printf("請輸入1-54之間的數字！\n");
+                    continue;
+                }
+                break;
+            }
+            build_village(players, i, option);
+            continue;
+        }
+    sleep(1);
+        if(players[i].NPC_difficulty == 1){
+            for(int32_t j = 0; j < NUM_TILES; ++j){
+                if(tiles[j].resourceType != Forest && tiles[j].resourceType != Hill){
+                    continue;
+                }
+                // for(int32_t k = 0; k < MAX_VILLAGES; ++k){
+                //     if(players[i].village[k] == 0){
+                //         players[i].village[k] = tiles[j].corner_id[5];
+                //         printf("玩家%d在%d號板塊建造了村莊！\n", i, tiles[j].corner_id[5]);
+                //         break;
+                //     }
+                // }
+                if( is_has_built(players, tiles[j].corner_id[5]) ){
+                    build_village(players, i, tiles[j].corner_id[5]);
+                }
+            }
+        } else {
+            int32_t random_point = 0;
+            while (1){
+                #if WINDOWS
+                random_point = rand() % 54 + 1;
+                #else
+                random_point = arc4random_uniform(53);
+                #endif
+
+                if(is_has_built(players, random_point)){
+                    continue;
+                }
+                break;
+            }
+
+            // for(int32_t j = 0; j < MAX_VILLAGES; ++j){
+            //     if(players[i].village[j] == 0){
+            //         players[i].village[j] = random_point;
+            //         printf("玩家%d在%d號板塊建造了村莊！\n", i, random_point);
+            //         break;
+            //     }
+            // }
+            build_village(players, i, random_point);
+        }
+    }
+    for(int32_t i = sys->player_num-1; i >= 0; --i){
+        if(i == 0){
+            print_map_state(players, tiles, sys, robber_loc);
+
+            while(1){
+                printf("請選擇你想要建造村莊的位置：(1-54)\n");
+                if( scanf("%d", &option) != 1){
+                    while(getchar() != '\n');
+                    continue;
+                }
+                while(getchar() != '\n');
+                if(option < 1 || option > 54){
+                    printf("請輸入1-54之間的數字！\n");
+                    continue;
+                }
+                if(is_has_built(players, option)){
+                    printf("此處已經有村莊或城市了！\n");
+                    continue;
+                }
+                break;
+            }
+            build_village(players, i, option);
+            continue;
+        }
+    sleep(1);
+        if(players[i].NPC_difficulty == 1){
+            for(int32_t j = 0; j < NUM_TILES; ++j){
+                if(tiles[j].resourceType != Forest && tiles[j].resourceType != Hill){
+                    continue;
+                }
+                if(is_has_built(players, tiles[j].corner_id[5])){
+                    continue;
+                }
+                build_village(players, i, tiles[j].corner_id[5]);
+            }
+        } else {
+            int32_t random_point = 0;
+            while (1){
+                #if WINDOWS
+                random_point = rand() % 54 + 1;
+                #else
+                random_point = arc4random_uniform(53);
+                #endif
+
+                if(is_has_built(players, random_point)){
+                    continue;
+                }
+                break;
+            }
+            build_village(players, i, random_point);
+        }
+    }
+}
 
 void init_player(Player *players, System *system_setting){
     for(int32_t i = 0; i < system_setting->player_num; ++i){
         for(int32_t j = 0; j < MAX_VILLAGES; ++j){
-            players[i].village[j] = -1;
+            players[i].village[j] = 0;
         }
         for(int32_t j = 0; j < MAX_CITIES; ++j){
-            players[i].city[j] = -1;
+            players[i].city[j] = 0;
         }
         for(int32_t j = 0; j < MAX_ROADS; ++j){
-            players[i].road[j][0] = -1;
-            players[i].road[j][1] = -1;
+            players[i].road[j][0] = 0;
+            players[i].road[j][1] = 0;
         }
         for(int32_t j = 0; j < 5; ++j){
             players[i].resource[j] = 0;
