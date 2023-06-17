@@ -9,6 +9,7 @@
 #define WIN_SCORE = 10
 #define MAX_VILLAGES 5
 #define MAX_CITIES 4
+#define MAX_ROADS 15
 
 typedef enum Resource
 {
@@ -23,7 +24,10 @@ struct  _player {
     int32_t resource[5]; // not show to other players
     int32_t total_resource; //show to other players
     int32_t is_used_develop_card; // initalize to 0 each round
-    int road[15][2]; // 玩家擁有的道路數量 //TODO
+    int road[MAX_ROADS][2]; // 玩家擁有的道路連接編號 //TODO
+    int num_roads;          // 玩家擁有的道路數量(不論是否相連)
+    int longest_roads;      // 目前連接的最長長度
+    int is_longest;         // 是否拿到最長道路卡
     int village[MAX_VILLAGES]; // 玩家擁有的村莊編號
     int city[MAX_CITIES]; // 玩家擁有的城市編號
     int develop_cards[25]; // 14+6+5，0:未擁有 1:未使用 2:已使用 (分數卡只有0,1)
