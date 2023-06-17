@@ -42,7 +42,7 @@ enum ResourceType { // 宣告六種版塊類型
     Grassland,
     Mountain,
     Hill,
-    Desert
+    Desert // 5
 };
 
 struct CatanTile {      // 定義每個版塊內容

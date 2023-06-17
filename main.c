@@ -116,9 +116,40 @@ int production(Player *player_list, int player)
     else
     {
         printf("即將發放資源！\n");
-        // TODO: 資源發放
+        // 資源發放
+        for (int i = 0; i < NUM_TILES; i++)
+        {
+            if (tiles[i].number == temp && tiles[i].resourceType == 5)
+            {
+                printf("沙漠板塊不會產生資源！\n");
+            }
+            else if (tiles[i].number == temp)
+            {
+                for (int j = 0; j < system_setting.player_num; j++)
+                {
+                    for (int k = 0; k < 6; k++)
+                    {
+                        for (int l = 0; l < MAX_VILLAGES; l++)
+                        {
+                            if (player_list[j].village[l] == tiles[i].corner_id[k])
+                            {
+                                printf("玩家%d的村莊(%d)收穫1個%s！\n", j, player_list[j].village[l], resource_name[tiles[i].resourceType]);
+                                player_list[j].resource[tiles[i].resourceType] += 1;
+                            }
+                        }
+                        for (int l = 0; l < MAX_CITIES; l++)
+                        {
+                            if (player_list[j].village[l] == tiles[i].corner_id[k])
+                            {
+                                printf("玩家%d的城市(%d)收穫2個%s！\n", j, player_list[j].city[l], resource_name[tiles[i].resourceType]);
+                                player_list[j].resource[tiles[i].resourceType] += 2;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
-    
     return 0;
 }
 
