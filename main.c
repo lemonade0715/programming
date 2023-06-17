@@ -45,11 +45,6 @@ int trade(Player *player_list, int player);
 int build(Player *player_list, int player);
 int robber(Player *player_list, int player);
 int use_develop_card(Player *player_list, int player);
-int production(Player *player_list, int player);
-int trade(Player *player_list, int player);
-int build(Player *player_list, int player);
-int robber(Player *player_list, int player);
-int use_develop_card(Player *player_list, int player);
 
 int main()
 {
@@ -1206,6 +1201,5 @@ int use_develop_card(Player *player_list, int player)
             }
         }
     }
-    
     return 0;
 }
