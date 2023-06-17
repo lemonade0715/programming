@@ -13,6 +13,7 @@ const char resource_name[][7] = {"小麥", "木頭", "羊毛", "石頭", "磚頭
 const char develop_card_name[][13] = {"騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "騎士卡", "資源壟斷", "資源壟斷", "道路建設", "道路建設", "創新發明", "創新發明", "分數卡", "分數卡", "分數卡", "分數卡", "分數卡"};
 const int harbor[18] = {3, 4, 5, 6, 30, 36, 25, 31, 44, 49, 7, 13, 12, 18, 47, 52, 53, 54};
 const char harbor_name[][10] = {"小麥2:1", "小麥2:1", "木頭2:1", "木頭2:1", "羊毛2:1", "羊毛2:1", "石頭2:1", "石頭2:1", "磚頭2:1", "磚頭2:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1", "任意3:1"};
+const int harbor_type[18] = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6};
 
 typedef enum State
 {
@@ -239,9 +240,158 @@ int trade(Player *player_list, int player)
                     }
                 }
             }
-            else if (option == system_setting.player_num + 1)
+            else if (option == system_setting.player_num + 1) // 港口交易
             {
-                // TODO: 港口交易
+                // Get player harbor infos
+                printf("您擁有的港口類型：\n");
+                int has_harbor[6] = {0};
+                for (int i = 0; i < 18; i++)
+                {
+                    for (int j = 0; j < MAX_VILLAGES; j++)
+                    {
+                        has_harbor[harbor_type[i] - 1] += (harbor[i] == player_list[player].village[j]) ? 1 : 0;
+                    }
+                    for (int j = 0; j < MAX_CITIES; j++)
+                    {
+                        has_harbor[harbor_type[i] - 1] += (harbor[i] == player_list[player].city[j]) ? 1 : 0;
+                    }
+                }
+                for (int i = 0; i < 6; i++)
+                {
+                    if (has_harbor[i])
+                    {
+                        printf("%d. %s x%d\n", i+1, harbor_name[2*i], has_harbor[i]);
+                    }
+                }
+                // Ask player which harbor
+                int option_2 = 0;
+                while (1)
+                {
+                    printf("請選擇您要使用的港口（輸入0回到交易選單）：\n");
+                    if (scanf("%d", &option_2) != 1)
+                    {
+                        while (getchar() != '\n');
+                        continue;
+                    }
+                    while (getchar() != '\n');
+                    if (option_2 < 0 || option_2 > 6)
+                    {
+                        printf("請輸入0-6之間的數值！\n");
+                        continue;
+                    }
+                    else if (option_2 == 0)
+                    {
+                        break;
+                    }
+                    else if (has_harbor[option_2 - 1] == 0)
+                    {
+                        printf("您沒有這個港口！\n");
+                        continue;
+                    }
+                    else if (option_2 == 6)
+                    {
+                        while (1)
+                        {
+                            int option_3 = 0;
+                            printf("您想要使用哪個資源兌換？\n（0.放棄 1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
+                            if (scanf("%d", &option_3) != 1)
+                            {
+                                while (getchar() != '\n');
+                                continue;
+                            }
+                            while (getchar() != '\n');
+                            if (option_3 < 0 || option_3 > 5)
+                            {
+                                printf("請輸入0-5之間的數值！\n");
+                                continue;
+                            }
+                            else if (option_3 == 0)
+                            {
+                                break;
+                            }
+                            else if (player_list[player].resource[option_3 - 1] < 3)
+                            {
+                                printf("您的%s不足！\n", resource_name[option_3 - 1]);
+                                continue;
+                            }
+                            else
+                            {
+                                int option_4 = 0;
+                                while (1)
+                                {
+                                    printf("請選擇您想兌換的資源\n（0.放棄 1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
+                                    if (scanf("%d", &option_4) != 1)
+                                    {
+                                        while (getchar() != '\n');
+                                        continue;
+                                    }
+                                    while (getchar() != '\n');
+                                    if (option_4 < 0 || option_4 > 5)
+                                    {
+                                        printf("請輸入0-5之間的數值！\n");
+                                        continue;
+                                    }
+                                    else if (option_4 == 0)
+                                    {
+                                        break;
+                                    }
+                                    else if (system_setting.bank_resource[option_4 - 1] < 1)
+                                    {
+                                        printf("銀行的%s不足！\n", resource_name[option_4 - 1]);
+                                        continue;
+                                    }
+                                    printf("您已使用3個%s兌換1個%s！\n", resource_name[option_3 - 1], resource_name[option_4 - 1]);
+                                    player_list[player].resource[option_3 - 1] -= 3;
+                                    system_setting.bank_resource[option_3 - 1] += 3;
+                                    system_setting.bank_resource[option_4 - 1] -= 1;
+                                    player_list[player].resource[option_4 - 1] += 1;
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    else // 1 <= option_2 <= 5
+                    {
+                        if (player_list[player].resource[option_2 - 1] < 2)
+                        {
+                            printf("您的%s不足！\n", resource_name[option_2 - 1]);
+                            break;
+                        }
+                        while (1)
+                        {
+                            int option_3 = 0;
+                            printf("請選擇您想兌換的資源\n（0.放棄 1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：");
+                            if (scanf("%d", &option_3) != 1)
+                            {
+                                while (getchar() != '\n');
+                                continue;
+                            }
+                            while (getchar() != '\n');
+                            if (option_3 < 0 || option_3 > 5)
+                            {
+                                printf("請輸入0-5之間的數值！\n");
+                                continue;
+                            }
+                            else if (option_3 == 0)
+                            {
+                                break;
+                            }
+                            else if (system_setting.bank_resource[option_3 - 1] < 1)
+                            {
+                                printf("銀行的%s不足！\n", resource_name[option_3 - 1]);
+                                continue;
+                            }
+                            printf("您已使用2個%s兌換1個%s！\n", resource_name[option_2 - 1], resource_name[option_3 - 1]);
+                            player_list[player].resource[option_2 - 1] -= 2;
+                            system_setting.bank_resource[option_2 - 1] += 2;
+                            system_setting.bank_resource[option_3 - 1] -= 1;
+                            player_list[player].resource[option_3 - 1] += 1;
+                            break;
+                        }
+                        break;
+                    }
+                }
             }
             else
             {

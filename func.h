@@ -7,7 +7,7 @@
 // 麥田x4、森林x4、草原x4、山脈x3、丘陵x3、沙漠x1
 #define NUM_TILES 19  // 板塊的總數量
 #define WIN_SCORE = 10
-#define MAX_SETTLEMENTS 5 
+#define MAX_VILLAGES 5
 #define MAX_CITIES 4
 
 typedef enum Resource
@@ -24,7 +24,7 @@ struct  _player {
     int32_t total_resource; //show to other players
     int32_t is_used_develop_card; // initalize to 0 each round
     int road[15][2]; // 玩家擁有的道路數量 //TODO
-    int village[MAX_SETTLEMENTS]; // 玩家擁有的村莊編號
+    int village[MAX_VILLAGES]; // 玩家擁有的村莊編號
     int city[MAX_CITIES]; // 玩家擁有的城市編號
     int develop_cards[25]; // 14+6+5，0:未擁有 1:未使用 2:已使用 (分數卡只有0,1)
     int new_develop_card; // 當回合購買的發展卡，每回合初始化為-1
@@ -51,6 +51,7 @@ struct CatanTile { // 定義每個版塊內容
     int has_village[6]; // 0: no village, 1: village, 2: city
 };
 
+// The actual definition is in func.c
 extern int connectedPoint[55][3];
 
 //
