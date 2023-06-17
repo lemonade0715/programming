@@ -271,3 +271,72 @@ void print_corner_id(struct CatanTile* tiles){
         printf("\n");
     }
 }
+
+int8_t check_connected(int p1, int p2) {
+    int8_t connected = 0;
+    int i = 0;
+    for (i = 0; i < 3; ++i) {
+        if (connectedPoint[p1][i] == p2) {
+            connected = 1;
+            break;
+        }
+    }
+    return connected;
+}
+
+int8_t check_if_has_road(Player *playlist, int p1, int p2) {
+    int playIdx = 0;
+    int roadIdx = 0;
+    for (playIdx = 0; playIdx < 4; ++playIdx) {
+        for (roadIdx = 0; roadIdx < 15; ++roadIdx) {
+            if (p1 == playlist[playIdx].road[roadIdx][0] && p2 == playlist[playIdx].road[roadIdx][1]) {
+                return 1;
+            }
+            if (p1 == playlist[playIdx].road[roadIdx][1] && p2 == playlist[playIdx].road[roadIdx][0]) {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+int8_t check_if_connected_build(Player *playlist, int currentPlayer, int p1, int p2) {
+    Player player = playlist[currentPlayer];
+    int roadIdx = 0;
+    // 判斷是否有連結在自己的道路上
+    for (roadIdx = 0; roadIdx < 15; ++roadIdx) {
+        if (p1 == player.road[roadIdx][0] ||
+            p1 == player.road[roadIdx][1] ||
+            p2 == player.road[roadIdx][0] ||
+            p2 == player.road[roadIdx][1]) {
+                return 1;
+            }
+    }
+
+    // 判斷是否有連接在自己的建築上
+    for (int i = 0; i < MAX_SETTLEMENTS; ++i) {
+        if (p1 == player.village[i] || p2 == player.village[i]) {
+            return 1;
+        }
+    }
+    for (int i = 0; i < MAX_CITIES; ++i) {
+        if (p1 == player.city[i] || p2 == player.city[i]) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+void add_road_to_player(Player *playlist, int currentPlayer, int p1, int p2) {
+    Player player = playlist[currentPlayer];
+    int roadIdx = 0;
+    for (roadIdx = 0; roadIdx < 15; ++roadIdx) {
+        if (0 == player.road[roadIdx][0] &&
+            0 == player.road[roadIdx][1] ) {
+                player.road[roadIdx][0] = p1;
+                player.road[roadIdx][0] = p2;
+                return;
+            }
+    }
+}
