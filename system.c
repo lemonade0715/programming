@@ -60,19 +60,18 @@ void print_userMsg(Player player_list[], System *system){
 
 void print_allResource(Player player_list[], System *system){
     const char resource_name[][7] = {"小麥", "木頭", "羊毛", "石頭", "磚頭"};
-    printf(BLUE"你擁有的資源: %d\n", player_list[0].total_resource);
+    printf(BLUE"\n你擁有的資源: %d\n", player_list[0].total_resource);
     for(int32_t i = 0; i < 5; ++i){
         printf("  %s: %d\t", resource_name[i], player_list[0].resource[i]);
     }
     printf(NONE);
-    printf("其他玩家擁有的資源: \n");
+    printf("\n其他玩家擁有的資源: \n");
     for(int32_t i = 1; i < system->player_num; ++i){
         if(i == 1)          printf(RED);
         else if(i == 2)     printf(GREEN);
         else if(i == 3)     printf(YELLOW);
         printf("  玩家%d: %d\t"NONE, i, player_list[i].total_resource);
     }
-    printf("\n");
 }
 
 

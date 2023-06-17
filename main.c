@@ -6,6 +6,8 @@
 
 #include "func.h"
 #include "system.h"
+#include "map.h"
+#include "computer.h"
 
 #define WINDOWS 0
 
@@ -70,6 +72,7 @@ int main()
             player_list[i].new_develop_card = -1;
         }
         //
+        print_map_state(player_list, tiles, &system_setting);
         
         sleep(1);
         printf("\n\033[1m【玩家%d - 收成階段】\033[0m\n", current_player);
@@ -171,6 +174,7 @@ int trade(Player *player_list, int player)
             int option = 0;
             while (1)
             {
+                print_allResource(player_list, &system_setting);
                 printf("\n你要和誰交易？\n（0為放棄交易，1-%d為其它玩家，%d為與銀行交易，%d選擇擁有的港口交易）：", system_setting.player_num - 1, system_setting.player_num, system_setting.player_num + 1);
                 if (scanf("%d", &option) != 1)
                 {
@@ -438,7 +442,7 @@ int trade(Player *player_list, int player)
     }
     
     // TODO: computer player
-    
+    computer_trade(player_list, player, &system_setting, tiles);
     return 0;
 }
 
