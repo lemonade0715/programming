@@ -153,6 +153,7 @@ int production(Player *player_list, int player)
                             {
                                 printf("玩家%d的村莊(%d)收穫1個%s！\n", j, player_list[j].village[l], resource_name[tiles[i].resourceType]);
                                 player_list[j].resource[tiles[i].resourceType] += 1;
+                                player_list[j].total_resource += 1;
                             }
                         }
                         for (int l = 0; l < MAX_CITIES; l++)
@@ -165,6 +166,7 @@ int production(Player *player_list, int player)
                             {
                                 printf("玩家%d的城市(%d)收穫2個%s！\n", j, player_list[j].city[l], resource_name[tiles[i].resourceType]);
                                 player_list[j].resource[tiles[i].resourceType] += 2;
+                                player_list[j].total_resource += 2;
                             }
                         }
                     }
@@ -1294,7 +1296,7 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
     for(int32_t i = 0; i < sys->player_num; ++i){
         if(i == 0){
             while(1){
-                printf("請選擇你想要建造村莊的位置：(1-54)\n");
+                printf("\n請選擇你想要建造村莊的位置(1-54)：");
                 if( scanf("%d", &option) != 1){
                     while(getchar() != '\n');
                     continue;
@@ -1309,7 +1311,7 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
             build_village(players, i, option);
             continue;
         }
-    sleep(1);
+    sleep(0.5);
         if(players[i].NPC_difficulty == 1){
             for(int32_t j = 0; j < NUM_TILES; ++j){
                 if(tiles[j].resourceType != Forest && tiles[j].resourceType != Hill){
@@ -1375,7 +1377,7 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
             build_village(players, i, option);
             continue;
         }
-    sleep(1);
+    sleep(0.5);
         if(players[i].NPC_difficulty == 1){
             for(int32_t j = 0; j < NUM_TILES; ++j){
                 if(tiles[j].resourceType != Forest && tiles[j].resourceType != Hill){

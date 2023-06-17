@@ -25,9 +25,10 @@ void trade_with_player(Player *player_list, int player, int option ){
         return ;
     }
     while (getchar() != '\n');
-
-    if(!option) return ;
-    else if(option < 0 || option > 5) {
+    if(!option) {
+        printf("你放棄了交易\n");
+        return ;
+    } else if(option < 0 || option > 5) {
         printf("交易失敗，請輸入0-5之間的數值\n");
         return ;
     }
@@ -39,7 +40,7 @@ void trade_with_player(Player *player_list, int player, int option ){
     }
 
 // 玩家交換資源的數量
-    printf("\n你想要用多少數量的%s與玩家%d進行交易呢\n（0.放棄, 1-%d: 欲交易數量）：", resource_name[src], player, player_list[0].resource[src]);
+    printf("\n你想要用多少數量的%s與玩家%d進行交易呢\n（0.放棄, ~%d: 欲交易數量）：", resource_name[src], player, player_list[0].resource[src]);
     if (scanf("%d", &option) != 1)
     {
         while (getchar() != '\n');
@@ -47,15 +48,17 @@ void trade_with_player(Player *player_list, int player, int option ){
         return ;
     }
     while (getchar() != '\n');
-    if(!option) return ;
-    if(option < 0 || option > player_list[player].resource[src]) {
+    if(!option) {
+        printf("你放棄了交易\n");
+        return ;
+    } else if(option < 0 || option > player_list[0].resource[src]) {
         printf("交易失敗，請輸入符合你資源數量的數值\n");
         return ;
     }
     int src_trade = option;
 
 // NPC交換資源的數量
-    printf("\n你希望玩家%d用多少數量的%s進行交易呢\n（0.放棄, 1-%d: 欲交易數量）：", player, resource_name[NPC_src], player_list[player].total_resource);
+    printf("\n你希望玩家%d用多少數量的%s進行交易呢\n（0.放棄, ~%d: 欲交易數量）：", player, resource_name[NPC_src], player_list[player].total_resource);
     if (scanf("%d", &option) != 1)
     {
         while (getchar() != '\n');
@@ -63,8 +66,10 @@ void trade_with_player(Player *player_list, int player, int option ){
         return ;
     }
     while (getchar() != '\n');
-    if(!option) return ;
-    if(option < 0 || option > player_list[player].total_resource) {
+    if(!option) {
+        printf("你放棄了交易\n");
+        return ;
+    } else if(option < 0 || option > player_list[player].total_resource) {
         printf("交易失敗，請輸入符合對方資源數量的數值\n");
         return ;
     }

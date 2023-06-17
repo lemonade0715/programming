@@ -71,6 +71,12 @@ void print_allResource(Player player_list[], System *system){
         else if(i == 2)     printf(GREEN);
         else if(i == 3)     printf(YELLOW);
         printf("  玩家%d: %d\t"NONE, i, player_list[i].total_resource);
+#if DEBUG
+        for(int32_t j = 0; j < 5; ++j){
+            printf("  %s: %d\t", resource_name[j], player_list[i].resource[j]);
+        }
+#endif
+        printf("\n");
     }
 }
 

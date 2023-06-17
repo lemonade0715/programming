@@ -212,8 +212,8 @@ if (refresh(player_list, system_setting))
 */
 
 void initCornerId(struct CatanTile* tiles){
-    tiles[0].corner_id[0] = 0;
-    tiles[0].corner_id[1] = 1;
+    tiles[0].corner_id[0] = 1;
+    tiles[0].corner_id[1] = 2;
     tiles[0].corner_id[2] = 4;
     tiles[0].corner_id[3] = 5;
     tiles[0].corner_id[4] = 9;
