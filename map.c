@@ -74,15 +74,27 @@ void c(const char* text, int32_t colorCode) {
         printf(NONE"%s"NONE, text);
     }
     if(colorCode == 0){
-        printf(BLUE2"%s"NONE, text);
+        printf(BLUE"%s"NONE, text);
     }
     else if(colorCode == 1){
-        printf(RED2"%s"NONE, text);
+        printf(RED"%s"NONE, text);
     }
     else if(colorCode == 2){
-        printf(GREEN2"%s"NONE, text);
+        printf(GREEN"%s"NONE, text);
     }
     else if(colorCode == 3){
+        printf(PURPLE"%s"NONE, text);
+    }
+    else if(colorCode == 4){
+        printf(BLUE2"%s"NONE, text);
+    }
+    else if(colorCode == 5){
+        printf(RED2"%s"NONE, text);
+    }
+    else if(colorCode == 6){
+        printf(GREEN2"%s"NONE, text);
+    }
+    else if(colorCode == 7){
         printf(PURPLE2"%s"NONE, text);
     }
     

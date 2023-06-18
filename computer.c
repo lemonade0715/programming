@@ -33,6 +33,9 @@ void computer_trade(Player *player_list, int player, System *sys, struct CatanTi
             object = rand() % sys->player_num;
         } 
         int object_src = rand() % 5;
+        while(!player_list[object].resource[object_src]){
+            object_src = rand() % 5;
+        }
         while(object_src == src && !player_list[object].resource[object_src]){
             object_src = rand() % 5;
         }
@@ -108,12 +111,18 @@ void computer_trade(Player *player_list, int player, System *sys, struct CatanTi
             }
         }
         int src_trade = rand() % NPC_src[src1] + 1;
+        while(src_trade > NPC_src[src1]){
+            src_trade = rand() % NPC_src[src1] + 1;
+        }
         int obj_src = src2;
         int32_t object = rand() % sys->player_num;
         while(object == player){
             object = rand() % sys->player_num;
         }
         int object_trade = rand() % player_list[object].resource[obj_src] + 1;
+        while(object_trade > player_list[object].resource[obj_src]){
+            object_trade = rand() % player_list[object].resource[obj_src] + 1;
+        }
         if(!object){
             printf("\n玩家%d想要用%d個%s與玩家%d交換%d個%s\n", player, src_trade, resource_name[src1], object, object_trade, resource_name[obj_src]);
             int option = 0;
@@ -232,7 +241,7 @@ void trade_with_player(Player *player_list, int player, int option ){
     }
     if(player_list[player].NPC_difficulty != 1){
         if(player_list[player].resource[NPC_src] < NPC_src_trade){
-            printf("玩家%d沒有足夠的資源\n", player);
+            printf("玩家%d拒絕了你的交易\n", player);
             return ;
         } else {
             player_list[player].resource[NPC_src] -= NPC_src_trade;
@@ -257,7 +266,7 @@ void trade_with_player(Player *player_list, int player, int option ){
     } 
     if(player_list[player].NPC_difficulty == 1){
         if(player_list[player].resource[NPC_src] < NPC_src_trade){
-            printf("玩家%d沒有足夠的資源\n", player);
+            printf("玩家%d拒絕了你的交易\n", player);
             return ;
         } else {
             player_list[player].resource[NPC_src] -= NPC_src_trade;
