@@ -473,10 +473,214 @@ int trade(Player *player_list, int player)
 
 int build(Player *player_list, int player)
 {
-    
-    
-    
-    
+    // 電腦
+    if (player != 0)
+    {
+        // TODO: ...
+        
+        return 0;
+    }
+    // 玩家
+    while (1)
+    {
+        int option = 0;
+        printf("請選擇您要執行的動作：\n（0.結束建築 1.建造道路 2.建造村莊 3.建造城市 4.購買發展卡）：");
+        if (scanf("%d", &option) != 1)
+        {
+            while (getchar() != '\n');
+            continue;
+        }
+        while (getchar() != '\n');
+        if (option == 0)
+        {
+            break;
+        }
+        else if (option == 1)
+        {
+            // TODO: ...
+        }
+        else if (option == 2)
+        {
+            // TODO: ...
+        }
+        else if (option == 3)
+        {
+            // 檢查城市數量
+            int city_count = 0;
+            for (int i = 0; i < MAX_CITIES; i++)
+            {
+                city_count += (player_list[player].city[i]) ? 1 : 0;
+            }
+            if (city_count == MAX_CITIES)
+            {
+                printf("您已經有%d座城市！\n", MAX_CITIES);
+                continue;
+            }
+            
+            // 檢查城市數量
+            int village_count = 0;
+            for (int i = 0; i < MAX_VILLAGES; i++)
+            {
+                village_count += (player_list[player].village[i]) ? 1 : 0;
+            }
+            if (village_count == 0)
+            {
+                printf("您沒有可以升級成城市的村莊！\n");
+                continue;
+            }
+            
+            // 檢查資源是否足夠
+            if (player_list[player].resource[0] < 2 || player_list[player].resource[3] < 3)
+            {
+                printf("您的資源不足，建造城市需要2個小麥、3個石頭！\n");
+                continue;
+            }
+            
+            // 選擇升級的村莊
+            while (1)
+            {
+                printf("請選擇您要升級的村莊（輸入0為放棄升級）\n（您擁有的村莊為 ");
+                for (int i = 0; i < MAX_VILLAGES; i++)
+                {
+                    if (player_list[player].village[i])
+                    {
+                        printf("%d ", player_list[player].village[i]);
+                    }
+                }
+                printf("）：");
+                int option_2 = 0;
+                if (scanf("%d", &option_2) != 1)
+                {
+                    while (getchar() != '\n');
+                    continue;
+                }
+                while (getchar() != '\n');
+                if (option_2 == 0)
+                {
+                    break;
+                }
+                else if (option_2 < 1 || option_2 > 54)
+                {
+                    printf("請輸入1~54之間的數字！\n");
+                    continue;
+                }
+                
+                int has_village = 0;
+                for (int i = 0 ; i < MAX_VILLAGES; i++)
+                {
+                    has_village += (player_list[player].village[i] == option_2) ? 1 : 0;
+                }
+                if (has_village == 0)
+                {
+                    printf("您沒有這個村莊！\n");
+                    continue;
+                }
+                
+                while (1)
+                {
+                    int option_3 = 0;
+                    printf("您是否確定要用2個小麥、3個石頭將村莊(%d)升級為城市？（0:回上頁 1:確認）\n", option_2);
+                    if (scanf("%d", &option_3) != 1)
+                    {
+                        while (getchar() != '\n');
+                        continue;
+                    }
+                    while (getchar() != '\n');
+                    if (option_3 != 0 && option_3 != 1)
+                    {
+                        continue;
+                    }
+                    else if (option_3 == 1)
+                    {
+                        player_list[player].resource[0] -= 2;
+                        player_list[player].resource[3] -= 3;
+                        system_setting.bank_resource[0] += 2;
+                        system_setting.bank_resource[3] += 3;
+                        
+                        printf("您已成功用2個小麥、3個石頭將村莊%d升級為城市！\n", option_2);
+                        for (int i = 0; i < MAX_VILLAGES; i++)
+                        {
+                            if (player_list[player].village[i] == option_2)
+                            {
+                                player_list[player].village[i] = 0;
+                                break;
+                            }
+                        }
+                        for (int i = 0; i < MAX_CITIES; i++)
+                        {
+                            if (player_list[player].city[i] == 0)
+                            {
+                                player_list[player].city[i] = option_2;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        else if (option == 4)
+        {
+            // 檢查分數卡庫存
+            int devcards = 0;
+            for (int i = 0; i < 25; i++)
+            {
+                devcards += system_setting.bank_develop_card[i];
+            }
+            if (devcards == 0)
+            {
+                printf("銀行已經沒有發展卡！\n");
+                continue;
+            }
+            
+            // 檢查玩家是否有足夠資源購買 (小麥x1 + 羊毛x1 + 石頭x1)
+            if (player_list[player].resource[0] < 1 || player_list[player].resource[2] < 1 || player_list[player].resource[3] < 1)
+            {
+                printf("您的資源不足，購買發展卡需要1個小麥、1個羊毛、1個石頭！\n");
+                continue;
+            }
+            
+            // 購買發展卡
+            while (1)
+            {
+                int option_2 = 0;
+                printf("請確認是否要以1個小麥、1個羊毛、1個石頭兌換1張分數卡？\n（0:否 1:是）\n");
+                if (scanf("%d", &option) != 1)
+                {
+                    while (getchar() != '\n');
+                    continue;
+                }
+                while (getchar() != '\n');
+                if (option == 0)
+                {
+                    break;
+                }
+                while (1)
+                {
+                    int option_3 = 0;
+                    #if WINDOWS
+                    option_3 = rand() % 25;
+                    #else
+                    option_3 = arc4random_uniform(24);
+                    #endif
+                    if (system_setting.bank_develop_card[option_3])
+                    {
+                        printf("您已成功以1個小麥、1個羊毛、1個石頭兌換1張分數卡！\n");
+                        system_setting.bank_develop_card[option_3] = 0;
+                        player_list[player].develop_cards[option_3] = 1;
+                        break;
+                    }
+                }
+            }
+            continue;
+        }
+        else
+        {
+            printf("請輸入0~4之間的數字！\n");
+            continue;
+        }
+    }
+    printf("建築階段結束\n");
     return 0;
 }
 
