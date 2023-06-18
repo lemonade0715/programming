@@ -51,6 +51,7 @@ void init_player(Player *players, System *system_setting);
 void set_village(Player *players, System *system_setting, struct CatanTile *tiles);
 int is_has_built(Player *players, int point_id);
 int connect_village_limit(Player *players, int point_id);
+void NPC_build(Player *players, int player, System *sys);
 
 int main()
 {
@@ -477,6 +478,7 @@ int build(Player *player_list, int player)
     if (player != 0)
     {
         // TODO: ...
+        NPC_build(player_list, player, &system_setting);
         
         return 0;
     }
@@ -527,6 +529,7 @@ int build(Player *player_list, int player)
                 if (scanf("%d", &option_2) != 1)
                 {
                     while (getchar() != '\n');
+                    printf("請輸入1-54的數字！\n");
                     continue;
                 }
                 while (getchar() != '\n');
@@ -1758,10 +1761,68 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
                 if(is_has_built(players, random_point)){
                     continue;
                 }
+                if(connect_village_limit(players, random_point)){
+                    continue;;
+                }
                 break;
             }
             build_village(players, i, random_point);
         }
+    }
+}
+
+void NPC_build(Player *players, int player, System *sys){
+    int option[4] = {0};
+    if(players[player].resource[BRICK] >= 1 && players[player].resource[WOOD] >= 1){
+        option[0] = 1;
+    } // 道路
+    if(players[player].resource[BRICK] >= 1 && players[player].resource[WHEAT] >= 1 && players[player].resource[WOOL] >= 1 && players[player].resource[WOOD] >= 1){
+        option[1] = 1;
+    } // 村莊
+    if(players[player].resource[STONE] >= 3 && players[player].resource[WHEAT] >= 2){
+        option[2] = 1;
+    } // 城市
+    if(players[player].resource[STONE] >= 1 && players[player].resource[WOOL] >= 1 && players[player].resource[WHEAT] >= 1 ){
+        option[3] = 1;
+    } // 發展卡
+
+    int32_t random_option = -1;
+    for(int32_t i = 0; i < 4; ++i){
+        if(i == 3)          random_option = 0;
+        if(option[i] != 1)     continue;
+    }
+    if(!random_option){
+        printf("玩家%d結束建築\n", player);
+        return ;
+    }
+
+    while(1){
+        printf("\n請選擇你想要建造村莊的位置(1-54)：");
+        random_option = rand() % 4;
+        if(option[random_option] == 0){
+            continue;
+        }
+        break;
+    }
+    
+    if(random_option == 1){
+        while (1){
+            #if WINDOWS
+            random_option = rand() % 54 + 1;
+            #else
+            random_option = arc4random_uniform(54) + 1;
+            #endif
+
+            if(is_has_built(players, random_option)){
+                continue;
+            }
+            if(connect_village_limit(players, random_option)){
+                continue;;
+            }
+            break;
+        }
+        build_village(players, player, random_option);
+
     }
 }
 
