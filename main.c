@@ -66,7 +66,7 @@ int main()
     init_player(player_list, &system_setting);
     robber_loc = robber_location(tiles);
 
-    print_map_state(player_list, tiles, &system_setting, robber_loc);
+    print_map_state2(player_list, tiles, &system_setting, robber_loc);
     set_village(player_list, &system_setting, tiles);
     srand(time(NULL));
     game_state = State_Production;
@@ -81,7 +81,7 @@ int main()
         }
         robber_loc = robber_location(tiles);
         if(!current_player) {
-            print_map_state(player_list, tiles, &system_setting, robber_loc);
+            print_map_state2(player_list, tiles, &system_setting, robber_loc);
         }
         //
         
@@ -278,6 +278,7 @@ int trade(Player *player_list, int player)
                                 system_setting.bank_resource[option_2 - 1] += 4;
                                 system_setting.bank_resource[option_3 - 1] -= 1;
                                 player_list[player].resource[option_3 - 1] += 1;
+                                player_list[player].total_resource -= 3;
                                 printf("\n交易成功！\n");
                                 option_2 = -1;
                                 break;
@@ -406,6 +407,7 @@ int trade(Player *player_list, int player)
                                     system_setting.bank_resource[option_3 - 1] += 3;
                                     system_setting.bank_resource[option_4 - 1] -= 1;
                                     player_list[player].resource[option_4 - 1] += 1;
+                                    player_list[player].total_resource -= 2;
                                     break;
                                 }
                             }
@@ -448,6 +450,7 @@ int trade(Player *player_list, int player)
                             system_setting.bank_resource[option_2 - 1] += 2;
                             system_setting.bank_resource[option_3 - 1] -= 1;
                             player_list[player].resource[option_3 - 1] += 1;
+                            player_list[player].total_resource -= 1;
                             break;
                         }
                         break;
@@ -603,6 +606,7 @@ int build(Player *player_list, int player)
                     player_list[player].resource[2] -= 1;
                     player_list[player].resource[4] -= 1;
                     player_list[player].village[option_2] += 1;
+                    player_list[player].total_resource -= 4;
                     break;
                 }
             }
@@ -700,7 +704,8 @@ int build(Player *player_list, int player)
                         player_list[player].resource[3] -= 3;
                         system_setting.bank_resource[0] += 2;
                         system_setting.bank_resource[3] += 3;
-                        
+                        player_list[player].total_resource -= 5;
+
                         printf("您已成功用2個小麥、3個石頭將村莊%d升級為城市！\n", option_2);
                         for (int i = 0; i < MAX_VILLAGES; i++)
                         {
@@ -791,19 +796,23 @@ int build(Player *player_list, int player)
 int robber(Player *player_list, int player)
 {
     // 檢查是否有人資源卡超過七張
-    printf("強盜來ㄌ！資源卡超過七張的人將被搶走一半的資源卡！\n");
+    printf("強盜來ㄌ！資源卡超過八張的人將被搶走一半的資源卡！\n");
     for (int i = 0; i < system_setting.player_num; i++)
     {
-        while (player_list[i].total_resource > 7)
+        if (player_list[i].total_resource > 7)
         {
-            // 捨棄最多的資源卡，若最多的不止一個，則捨棄其中的第一個
-            int max_pos = 5;
-            for (int j = 4; j >= 0; j--)
-            {
-                max_pos = (player_list[i].resource[j] > player_list[i].resource[max_pos]) ? j : max_pos;
+            int discard = player_list[i].total_resource / 2;
+            while(discard > 0){
+                // 捨棄最多的資源卡，若最多的不止一個，則捨棄其中的第一個
+                int max_pos = 5;
+                for (int j = 4; j >= 0; j--)
+                {
+                    max_pos = (player_list[i].resource[j] > player_list[i].resource[max_pos]) ? j : max_pos;
+                }
+                player_list[i].resource[max_pos]--;
+                player_list[i].total_resource--;
+                discard--;
             }
-            player_list[i].resource[max_pos]--;
-            player_list[i].total_resource--;
         }
     }
     
@@ -1250,6 +1259,8 @@ int use_develop_card(Player *player_list, int player)
                             printf("您從玩家%d獲得%d個%s！\n", j, player_list[j].resource[option_2 - 1], resource_name[option_2 - 1]);
                             player_list[player].resource[option_2 - 1] += player_list[j].resource[option_2 - 1];
                             player_list[j].resource[option_2 - 1] = 0;
+                            player_list[player].total_resource += player_list[j].resource[option_2 - 1];
+                            player_list[j].total_resource = 0;
                         }
                     }
                 }
@@ -1287,6 +1298,7 @@ int use_develop_card(Player *player_list, int player)
                         }
                         system_setting.bank_resource[option_2 - 1] -= 1;
                         player_list[player].resource[option_2 - 1] += 1;
+                        player_list[player].total_resource += 1;
                         printf("您已獲得1個%s！\n", resource_name[option_2 - 1]);
                         break;
                     }
@@ -1312,6 +1324,7 @@ int use_develop_card(Player *player_list, int player)
                         }
                         system_setting.bank_resource[option_2 - 1] -= 1;
                         player_list[player].resource[option_2 - 1] += 1;
+                        player_list[player].total_resource += 1;
                         printf("您已獲得1個%s！\n", resource_name[option_2 - 1]);
                         break;
                     }
@@ -1537,6 +1550,8 @@ int use_develop_card(Player *player_list, int player)
                 printf("玩家%d向玩家%d搶奪%d個%s！\n", player, i, player_list[i].resource[option_2], resource_name[option_2]);
                 player_list[player].resource[option_2] += player_list[i].resource[option_2];
                 player_list[i].resource[option_2] = 0;
+                player_list[player].total_resource += player_list[i].resource[option_2];
+                player_list[i].total_resource = 0;
             }
         }
         else if (option == 16 || option == 17) // 道路建設
@@ -1560,6 +1575,7 @@ int use_develop_card(Player *player_list, int player)
                 printf("玩家%d向銀行拿取1個%s！\n", player, resource_name[option_2]);
                 system_setting.bank_resource[option_2] -= 1;
                 player_list[player].resource[option_2] += 1;
+                player_list[player].total_resource += 1;
                 break;
             }
             while (1)
@@ -1577,6 +1593,7 @@ int use_develop_card(Player *player_list, int player)
                 printf("玩家%d向銀行拿取1個%s！\n", player, resource_name[option_2]);
                 system_setting.bank_resource[option_2] -= 1;
                 player_list[player].resource[option_2] += 1;
+                player_list[player].total_resource += 1;
                 break;
             }
         }
@@ -1619,15 +1636,16 @@ int connect_village_limit(Player *players, int point_id){
     for(int32_t i = 0; i < system_setting.player_num; ++i){
         for(int32_t j = 0; j < MAX_VILLAGES; ++j)
         {
-            if(players[i].village[j] == connectedPoint[point_id][0] || players[i].village[j] == connectedPoint[point_id][1] 
-                                    || players[i].village[j] == connectedPoint[point_id][2]){
+            if(connectedPoint[ players[i].village[j] ][0] == point_id || connectedPoint[ players[i].village[j] ][1] == point_id 
+                                    || connectedPoint[ players[i].village[j] ][2] == point_id){
                 return 1;
             }
         }
         for(int32_t j = 0; j < MAX_CITIES; ++j)
         {
-            if(players[i].city[j] == connectedPoint[point_id][0] || players[i].city[j] == connectedPoint[point_id][1] 
-                                    || players[i].city[j] == connectedPoint[point_id][2]){
+            if(connectedPoint[ players[i].city[j] ][0] == point_id || connectedPoint[ players[i].city[j] ][1] == point_id 
+                                    || connectedPoint[ players[i].city[j] ][2] == point_id){
+
                 return 1;
             }
         }
@@ -1655,7 +1673,7 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
             build_village(players, i, option);
             continue;
         }
-    sleep(0.5);
+    usleep(500000);
         if(players[i].NPC_difficulty == 1){
             for(int32_t j = 0; j < NUM_TILES; ++j){
                 if(tiles[j].resourceType != Forest && tiles[j].resourceType != Hill){
@@ -1688,7 +1706,7 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
     }
     for(int32_t i = sys->player_num-1; i >= 0; --i){
         if(i == 0){
-            print_map_state(players, tiles, sys, robber_loc);
+            print_map_state2(players, tiles, sys, robber_loc);
 
             while(1){
                 printf("請選擇你想要建造村莊的位置：(1-54)\n");
@@ -1714,7 +1732,7 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
             build_village(players, i, option);
             continue;
         }
-    sleep(0.5);
+    usleep(500000);
         if(players[i].NPC_difficulty == 1){
             for(int32_t j = 0; j < NUM_TILES; ++j){
                 if(tiles[j].resourceType != Forest && tiles[j].resourceType != Hill){
