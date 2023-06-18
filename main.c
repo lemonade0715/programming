@@ -978,7 +978,7 @@ int robber(Player *player_list, int player)
     }
     if (robbable_players[0] + robbable_players[1] + robbable_players[2] + robbable_players[3] == 0)
     {
-        printf("(1) 板塊%d附近沒有村莊或城市！\n(2) 沒有可以搶奪的資源\n", robber_position);
+        printf("結果:\n  (1) 板塊%d附近沒有村莊或城市！\n  (2) 在板塊上的玩家沒有可以搶奪的資源\n", robber_position);
         return 0;
     }
     
@@ -1058,6 +1058,10 @@ int robber(Player *player_list, int player)
         }
         else if (robbable_players[option] == 0)
         {
+            if(player_list[option].total_resource < 1){
+                printf("該位玩家沒有可以搶奪的資源！\n");
+                continue;
+            }
             printf("該位玩家在強盜所在板塊的附近沒有村莊或城市！\n");
             continue;
         }
