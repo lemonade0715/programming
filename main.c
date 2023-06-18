@@ -880,7 +880,7 @@ int robber(Player *player_list, int player)
             int discard = player_list[i].total_resource / 2;
             while(discard > 0){
                 // 捨棄最多的資源卡，若最多的不止一個，則捨棄其中的第一個
-                int max_pos = 5;
+                int max_pos = 4;
                 for (int j = 4; j >= 0; j--)
                 {
                     max_pos = (player_list[i].resource[j] > player_list[i].resource[max_pos]) ? j : max_pos;
@@ -978,7 +978,7 @@ int robber(Player *player_list, int player)
     }
     if (robbable_players[0] + robbable_players[1] + robbable_players[2] + robbable_players[3] == 0)
     {
-        printf("板塊%d附近沒有村莊或城市！\n", robber_position);
+        printf("(1) 板塊%d附近沒有村莊或城市！\n(2) 沒有可以搶奪的資源\n", robber_position);
         return 0;
     }
     
@@ -1877,7 +1877,6 @@ void NPC_build(Player *players, int player, System *sys){
     }
 
     while(1){
-        printf("\n請選擇你想要建造村莊的位置(1-54)：");
         random_option = rand() % 4;
         if(option[random_option] == 0){
             continue;
@@ -1902,7 +1901,42 @@ void NPC_build(Player *players, int player, System *sys){
             break;
         }
         build_village(players, player, random_option);
-
+    }
+    else if(random_option == 3){
+        // 檢查分數卡庫存
+        int devcards = 0;
+        for (int i = 0; i < 25; i++)
+        {
+            devcards += system_setting.bank_develop_card[i];
+        }
+        if (devcards == 0)
+        {
+            printf("玩家%d結束建築\n", player);
+            return ;
+        }
+                
+        // 購買發展卡
+        while (1)
+        {
+            int option_2 = 0;
+            int option_3 = 0;
+            #if WINDOWS
+            option_3 = rand() % 25;
+            #else
+            option_3 = arc4random_uniform(25);
+            #endif
+            if (system_setting.bank_develop_card[option_3])
+            {
+                printf("玩家%d以1個小麥、1個羊毛、1個石頭兌換1張分數卡！\n", player);
+                system_setting.bank_develop_card[option_3] = 0;
+                players[player].develop_cards[option_3] = 1;
+                players[player].resource[WHEAT]--;
+                players[player].resource[WOOL]--;
+                players[player].resource[STONE]--;
+                players[player].total_resource -= 3;
+                return ;
+            }
+        }
     }
 }
 
