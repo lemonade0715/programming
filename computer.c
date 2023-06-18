@@ -66,12 +66,12 @@ void computer_trade(Player *player_list, int player, System *sys, struct CatanTi
                 }
             }
             if(option){
-                player_list[player].resource[src] += object_trade;
-                player_list[player].resource[object_src] -= object_trade;
-                player_list[object].resource[src] -= src_trade;
-                player_list[object].resource[object_src] += src_trade;
-                player_list[player].total_resource += object_trade - src_trade;
-                player_list[object].total_resource += src_trade - object_trade;
+                player_list[player].resource[src] -= src_trade;
+                player_list[player].resource[object_src] += object_trade;
+                player_list[object].resource[src] += src_trade;
+                player_list[object].resource[object_src] -= object_trade;
+                player_list[player].total_resource += src_trade - object_trade;
+                player_list[object].total_resource += object_trade - src_trade;
                 printf("你同意了交易\n");
                 return ;
             } else {
@@ -83,13 +83,13 @@ void computer_trade(Player *player_list, int player, System *sys, struct CatanTi
             printf("\n玩家%d想要用%d個%s與玩家%d交換%d個%s\n", player, src_trade, resource_name[src], object, object_trade, resource_name[object_src]);
             int option = rand() % 2;
             if(option){
-                player_list[player].resource[src] += object_trade;
-                player_list[player].resource[object_src] -= object_trade;
-                player_list[object].resource[src] -= src_trade;
-                player_list[object].resource[object_src] += src_trade;
-                player_list[player].total_resource += object_trade - src_trade;
-                player_list[object].total_resource += src_trade - object_trade;
-                printf("玩家%d同意了交易\n", object);
+                player_list[player].resource[src] -= src_trade;
+                player_list[player].resource[object_src] += object_trade;
+                player_list[object].resource[src] += src_trade;
+                player_list[object].resource[object_src] -= object_trade;
+                player_list[player].total_resource += src_trade - object_trade;
+                player_list[object].total_resource += object_trade - src_trade;
+                printf("你同意了交易\n");
                 return ;
             } else {
                 printf("玩家%d拒絕了交易\n", object);
