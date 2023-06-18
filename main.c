@@ -103,6 +103,7 @@ int main()
         
         current_player = (current_player + 1) % system_setting.player_num;
         printf("--------------------------------------------\n");
+        sleep(1);
     }
     return 0;
 }
@@ -477,9 +478,7 @@ int build(Player *player_list, int player)
     // 電腦 難度1 (hard)
     if (player != 0 && player_list[player].NPC_difficulty == 1)
     {
-        // TODO: ...
         NPC_build(player_list, player, &system_setting);
-        
         return 0;
     }
     else if (player != 0) // 電腦 難度2 (easy)
@@ -559,7 +558,7 @@ int build(Player *player_list, int player)
             //
             if (city_count == MAX_CITIES || village_count == 0 || resource_check == 0)
             {
-                option == 1;
+                option = 1;
             }
             else
             {
@@ -599,7 +598,7 @@ int build(Player *player_list, int player)
             //
             if (village_count >= MAX_VILLAGES || resource_check == 0)
             {
-                option == 1;
+                option = 1;
             }
             else
             {
@@ -679,10 +678,62 @@ int build(Player *player_list, int player)
             return 0;
         }
         // 檢查道路數量
+        if (player_list[player].num_roads >= MAX_ROADS)
+        {
+            printf("建築階段結束\n");
+            return 0;
+        }
         
-        
-        
-        
+        for (int i = 0; i < 10000; i++)
+        {
+            int road_1 = 0, road_2 = 0;
+            
+            // 選現有道路上其中一點為 road_1
+            while (1)
+            {
+                #if WINDOWS
+                road_1 = rand() % 30;
+                #else
+                road_1 = arc4random_uniform(30);
+                #endif
+                
+                if (player_list[player].road[road_1 / 2][road_1 % 2] != 0)
+                {
+                    road_1 = player_list[player].road[road_1 / 2][road_1 % 2];
+                    break;
+                }
+            }
+            while (1)
+            {
+                #if WINDOWS
+                road_2 = rand() % 3;
+                #else
+                road_2 = arc4random_uniform(3);
+                #endif
+                
+                road_2 = connectedPoint[road_1][road_2];
+                
+                if (road_2 != 0)
+                {
+                    break;
+                }
+            }
+            
+            if (check_connected(road_1, road_2) == 0)
+            {
+                continue;
+            }
+            else if (check_if_has_road(player_list, road_1, road_2) == 1)
+            {
+                continue;
+            }
+            else if (check_if_connected_build(player_list, player, road_1, road_2) == 0)
+            {
+                continue;
+            }
+            printf("玩家%d已建造道路 %d,%d！\n", player, road_1, road_2);
+            add_road_to_player(player_list, player, road_1, road_2);
+        }
         return 0;
     }
     // 玩家
