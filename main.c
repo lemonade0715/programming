@@ -103,20 +103,18 @@ int main()
         current_player = (current_player + 1) % system_setting.player_num;
         printf("--------------------------------------------\n");
     }
-    
     return 0;
 }
 
 int production(Player *player_list, int player)
 {
-    printf("當前玩家：玩家%d\n", player);
     // 擲骰子
     #if WINDOWS
     int temp = (rand() % 6) + 2;
     temp += rand() % 6;
     #else
-    int temp = arc4random_uniform(5) + 2;
-    temp += arc4random_uniform(5);
+    int temp = arc4random_uniform(6) + 2;
+    temp += arc4random_uniform(6);
     #endif
     
     // 印出擲骰資訊
@@ -501,7 +499,114 @@ int build(Player *player_list, int player)
         }
         else if (option == 2)
         {
-            // TODO: ...
+            // 檢查鄉村數量
+            int village_count = 0;
+            for (int i = 0; i < MAX_VILLAGES; i++)
+            {
+                village_count += (player_list[player].village[i]) ? 1 : 0;
+            }
+            if (village_count == MAX_VILLAGES)
+            {
+                printf("您已經有%d座村莊！\n", MAX_VILLAGES);
+                continue;
+            }
+            
+            // 檢查資源是否足夠
+            if (player_list[player].resource[0] < 1 || player_list[player].resource[1] < 1 || player_list[player].resource[2] < 1 || player_list[player].resource[4] < 1)
+            {
+                printf("您的資源不足，建造村莊需要1個小麥、1個木頭、1個羊毛、1個磚頭！\n");
+                continue;
+            }
+            
+            while (1)
+            {
+                int option_2 = 0;
+                printf("請選擇您要將村莊蓋在何處？\n");
+                if (scanf("%d", &option_2) != 1)
+                {
+                    while (getchar() != '\n');
+                    continue;
+                }
+                while (getchar() != '\n');
+                if (option_2 < 1 || option_2 > 54)
+                {
+                    printf("請輸入1-54的數字！\n");
+                    continue;
+                }
+                
+                int valid_flag = 1;
+                // 如果該處已經有村莊或城市
+                for (int i = 0; i < MAX_VILLAGES * system_setting.player_num; i++)
+                {
+                    if (player_list[i / MAX_VILLAGES].village[i % MAX_VILLAGES] == option_2)
+                    {
+                        valid_flag = 0;
+                        break;
+                    }
+                }
+                for (int i = 0; i < MAX_CITIES * system_setting.player_num; i++)
+                {
+                    if (player_list[i / MAX_CITIES].city[i % MAX_CITIES] == option_2)
+                    {
+                        valid_flag = 0;
+                        break;
+                    }
+                }
+                // 如果附近已有村莊或城市
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < MAX_VILLAGES * system_setting.player_num; j++)
+                    {
+                        if (player_list[j / MAX_VILLAGES].village[j % MAX_VILLAGES] == connectedPoint[option_2][i])
+                        {
+                            valid_flag = 0;
+                            break;
+                        }
+                    }
+                    for (int j = 0; j < MAX_CITIES * system_setting.player_num; j++)
+                    {
+                        if (player_list[j / MAX_CITIES].city[j % MAX_CITIES] == connectedPoint[option_2][i])
+                        {
+                            valid_flag = 0;
+                            break;
+                        }
+                    }
+                }
+                
+                if (valid_flag)
+                {
+                    int option_3 = 0;
+                    while (1)
+                    {
+                        printf("您是否確定花費1個小麥、1個木頭、1個羊毛、1個磚頭在%d建造村莊？（0:否 1:是）\n", option_2);
+                        if (scanf("%d", &option_3) != 1)
+                        {
+                            while (getchar() != '\n');
+                            option_3 = 0;
+                            continue;
+                        }
+                        while (getchar() != '\n');
+                        if (option_3 != 0 && option_3 != 1)
+                        {
+                            printf("請輸入0或1！\n");
+                            continue;
+                        }
+                        break;
+                    }
+                    if (option_3 == 0)
+                    {
+                        continue;
+                    }
+                    // option_3 == 1
+                    printf("您已花費1個小麥、1個木頭、1個羊毛、1個磚頭在%d建造村莊！\n", option_2);
+                    player_list[player].resource[0] -= 1;
+                    player_list[player].resource[1] -= 1;
+                    player_list[player].resource[2] -= 1;
+                    player_list[player].resource[4] -= 1;
+                    player_list[player].village[option_2] += 1;
+                    break;
+                }
+            }
         }
         else if (option == 3)
         {
@@ -517,7 +622,7 @@ int build(Player *player_list, int player)
                 continue;
             }
             
-            // 檢查城市數量
+            // 檢查鄉村數量
             int village_count = 0;
             for (int i = 0; i < MAX_VILLAGES; i++)
             {
@@ -661,7 +766,7 @@ int build(Player *player_list, int player)
                     #if WINDOWS
                     option_3 = rand() % 25;
                     #else
-                    option_3 = arc4random_uniform(24);
+                    option_3 = arc4random_uniform(25);
                     #endif
                     if (system_setting.bank_develop_card[option_3])
                     {
@@ -729,17 +834,14 @@ int robber(Player *player_list, int player)
             
             if (robber_position < 0 || robber_position > 18)
             {
-                printf("板塊需介於 0 ~ %d 之間！\n！\n", NUM_TILES - 1);
-                continue;
+                printf("板塊需介於 0 ~ %d 之間！\n", NUM_TILES - 1);
                 continue;
             }
-            else if (robber_position == robber_position_prev) if (robber_position == robber_position_prev)
+            else if (robber_position == robber_position_prev)
             {
-                printf("強盜必須移動！\n！\n");
-                continue;
+                printf("強盜必須移動！\n");
                 continue;
             }
-            break;
             break;
         }
     }
@@ -752,10 +854,10 @@ int robber(Player *player_list, int player)
             robber_position = rand() % NUM_TILES;
         }
         #else
-        robber_position = arc4random_uniform(NUM_TILES - 1);
+        robber_position = arc4random_uniform(NUM_TILES);
         while (robber_position == robber_position_prev)
         {
-            robber_position = arc4random_uniform(NUM_TILES - 1);
+            robber_position = arc4random_uniform(NUM_TILES);
         }
         #endif
     }
@@ -804,7 +906,7 @@ int robber(Player *player_list, int player)
             #if WINDOWS
             option = rand() % system_setting.player_num;
             #else
-            option = arc4random_uniform(system_setting.player_num - 1);
+            option = arc4random_uniform(system_setting.player_num);
             #endif
             
             if (robbable_players[0] + robbable_players[1] + robbable_players[2] + robbable_players[3] == 0)
@@ -821,7 +923,7 @@ int robber(Player *player_list, int player)
             #if WINDOWS
             temp_rob = rand() % player_list[option].total_resource;
             #else
-            temp_rob = arc4random_uniform(player_list[option].total_resource - 1);
+            temp_rob = arc4random_uniform(player_list[option].total_resource);
             #endif
             
             for (int i = 0; i < 5; i++)
@@ -880,7 +982,7 @@ int robber(Player *player_list, int player)
         #if WINDOWS
         temp_rob = rand() % player_list[option].total_resource;
         #else
-        temp_rob = arc4random_uniform(player_list[option].total_resource - 1);
+        temp_rob = arc4random_uniform(player_list[option].total_resource);
         #endif
         
         for (int i = 0; i < 5; i++)
@@ -1030,7 +1132,7 @@ int use_develop_card(Player *player_list, int player)
                                 #if WINDOWS
                                 option = rand() % system_setting.player_num;
                                 #else
-                                option = arc4random_uniform(system_setting.player_num - 1);
+                                option = arc4random_uniform(system_setting.player_num);
                                 #endif
                             
                                 if (option == player || robbable_players[option] == 0)
@@ -1042,7 +1144,7 @@ int use_develop_card(Player *player_list, int player)
                                 #if WINDOWS
                                 temp_rob = rand() % player_list[option].total_resource;
                                 #else
-                                temp_rob = arc4random_uniform(player_list[option].total_resource - 1);
+                                temp_rob = arc4random_uniform(player_list[option].total_resource);
                                 #endif
                                 
                                 for (int i = 0; i < 5; i++)
@@ -1101,7 +1203,7 @@ int use_develop_card(Player *player_list, int player)
                             #if WINDOWS
                             temp_rob = rand() % player_list[option].total_resource;
                             #else
-                            temp_rob = arc4random_uniform(player_list[option].total_resource - 1);
+                            temp_rob = arc4random_uniform(player_list[option].total_resource);
                             #endif
                             
                             for (int i = 0; i < 5; i++)
@@ -1240,7 +1342,7 @@ int use_develop_card(Player *player_list, int player)
                 #if WINDOWS
                 option = rand() % 20;
                 #else
-                option = arc4random_uniform(19);
+                option = arc4random_uniform(20);
                 #endif
                 if (player_list[player].develop_cards[option] == 1)
                 {
@@ -1252,7 +1354,7 @@ int use_develop_card(Player *player_list, int player)
             #if WINDOWS
             option = rand() % 20;
             #else
-            option = arc4random_uniform(19);
+            option = arc4random_uniform(20);
             #endif
             break;
     }
@@ -1277,10 +1379,10 @@ int use_develop_card(Player *player_list, int player)
                 robber_position = rand() % NUM_TILES;
             }
             #else
-            robber_position = arc4random_uniform(NUM_TILES - 1);
+            robber_position = arc4random_uniform(NUM_TILES);
             while (robber_position == robber_position_prev)
             {
-                robber_position = arc4random_uniform(NUM_TILES - 1);
+                robber_position = arc4random_uniform(NUM_TILES);
             }
             #endif
             
@@ -1329,7 +1431,7 @@ int use_develop_card(Player *player_list, int player)
                     #if WINDOWS
                     option = rand() % system_setting.player_num;
                     #else
-                    option = arc4random_uniform(system_setting.player_num - 1);
+                    option = arc4random_uniform(system_setting.player_num);
                     #endif
                 
                     if (option == player || robbable_players[option] == 0)
@@ -1341,7 +1443,7 @@ int use_develop_card(Player *player_list, int player)
                     #if WINDOWS
                     temp_rob = rand() % player_list[option].total_resource;
                     #else
-                    temp_rob = arc4random_uniform(player_list[option].total_resource - 1);
+                    temp_rob = arc4random_uniform(player_list[option].total_resource);
                     #endif
                     
                     for (int i = 0; i < 5; i++)
@@ -1400,7 +1502,7 @@ int use_develop_card(Player *player_list, int player)
                 #if WINDOWS
                 temp_rob = rand() % player_list[option].total_resource;
                 #else
-                temp_rob = arc4random_uniform(player_list[option].total_resource - 1);
+                temp_rob = arc4random_uniform(player_list[option].total_resource);
                 #endif
                 
                 for (int i = 0; i < 5; i++)
@@ -1424,7 +1526,7 @@ int use_develop_card(Player *player_list, int player)
             #if WINDOWS
             option_2 = rand() % 5;
             #else
-            option_2 = arc4random_uniform(4);
+            option_2 = arc4random_uniform(5);
             #endif
             
             for (int i = 0; i < system_setting.player_num; i++)
@@ -1449,7 +1551,7 @@ int use_develop_card(Player *player_list, int player)
                 #if WINDOWS
                 option_2 = rand() % 5;
                 #else
-                option_2 = arc4random_uniform(4);
+                option_2 = arc4random_uniform(5);
                 #endif
                 
                 if (system_setting.bank_resource[option_2] < 1)
@@ -1466,7 +1568,7 @@ int use_develop_card(Player *player_list, int player)
                 #if WINDOWS
                 option_2 = rand() % 5;
                 #else
-                option_2 = arc4random_uniform(4);
+                option_2 = arc4random_uniform(5);
                 #endif
                 
                 if (system_setting.bank_resource[option_2] < 1)
@@ -1570,7 +1672,7 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
                 #if WINDOWS
                 random_point = rand() % 54 + 1;
                 #else
-                random_point = arc4random_uniform(53);
+                random_point = arc4random_uniform(54) + 1;
                 #endif
 
                 if(is_has_built(players, random_point)){
@@ -1633,7 +1735,7 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
                 #if WINDOWS
                 random_point = rand() % 54 + 1;
                 #else
-                random_point = arc4random_uniform(53);
+                random_point = arc4random_uniform(54) + 1;
                 #endif
 
                 if(is_has_built(players, random_point)){
