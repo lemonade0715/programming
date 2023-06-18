@@ -16,7 +16,6 @@ void computer_trade(Player *player_list, int player, System *sys, struct CatanTi
         NPC_src[i] = player_list[player].resource[i];
         total_src += NPC_src[i];
     }
-    printf("NPC_src = {%d, %d, %d, %d, %d}\n", NPC_src[0], NPC_src[1], NPC_src[2], NPC_src[3], NPC_src[4]);
     
     if(player_list[player].NPC_difficulty != 1 && total_src < 4){
         printf("\n玩家%d放棄交易\n", player);
@@ -24,31 +23,25 @@ void computer_trade(Player *player_list, int player, System *sys, struct CatanTi
     } else if(player_list[player].NPC_difficulty != 1){
         int src = rand() % 5;
         while(!NPC_src[src]){
-            printf("LINE%d\n", __LINE__);
             src = rand() % 5;
         }
         int src_trade = rand() % NPC_src[src] + 1;
         while(src_trade > NPC_src[src]){
-            printf("src_trade = %d\n NPC_src[src] = %d\n", src_trade, NPC_src[src]);
             src_trade = rand() % NPC_src[src] + 1;
         }
         int32_t object = rand() % sys->player_num;
         while(object == player){
-            printf("LINE%d\n", __LINE__);
             object = rand() % sys->player_num;
         } 
         int object_src = rand() % 5;
         while(!player_list[object].resource[object_src]){
-            printf("LINE%d\n", __LINE__);
             object_src = rand() % 5;
         }
         while(object_src == src && !player_list[object].resource[object_src]){
-            printf("LINE%d\n", __LINE__);
             object_src = rand() % 5;
         }
         int object_trade = rand() % player_list[object].resource[object_src] + 1;
         while(object_trade > player_list[object].resource[object_src]){
-            printf("LINE%d\n", __LINE__);
             object_trade = rand() % player_list[object].resource[object_src] + 1;
         }
         if(!object){
