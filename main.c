@@ -1901,6 +1901,7 @@ void NPC_build(Player *players, int player, System *sys){
             break;
         }
         build_village(players, player, random_option);
+        return;
     }
     else if(random_option == 3){
         // 檢查分數卡庫存
@@ -1938,6 +1939,8 @@ void NPC_build(Player *players, int player, System *sys){
             }
         }
     }
+    
+    printf("玩家%d結束建築\n", player);
 }
 
 void init_player(Player *players, System *system_setting){
