@@ -103,6 +103,7 @@ int main()
         
         current_player = (current_player + 1) % system_setting.player_num;
         printf("--------------------------------------------\n");
+        sleep(1);
     }
     return 0;
 }
@@ -474,12 +475,265 @@ int trade(Player *player_list, int player)
 
 int build(Player *player_list, int player)
 {
-    // 電腦
-    if (player != 0)
+    // 電腦 難度1 (hard)
+    if (player != 0 && player_list[player].NPC_difficulty == 1)
     {
-        // TODO: ...
         NPC_build(player_list, player, &system_setting);
+        return 0;
+    }
+    else if (player != 0) // 電腦 難度2 (easy)
+    {
+        int option = 0;
+        #if WINDOWS
+        option = rand() % 5;
+        #else
+        option = arc4random_uniform(5);
+        #endif
         
+        if (option == 0)
+        {
+            printf("建築階段結束\n");
+            return 0;
+        }
+        if (option == 4)
+        {
+            // 資源不足
+            if (player_list[player].resource[0] < 1 || player_list[player].resource[2] < 1 || player_list[player].resource[3] < 1)
+            {
+                printf("建築階段結束\n");
+                return 0;
+            }
+            // 銀行沒有發展卡
+            int devcards = 0;
+            for (int i = 0; i < 25; i++)
+            {
+                devcards += (system_setting.bank_develop_card[i]) ? 1 : 0;
+            }
+            if (devcards == 0)
+            {
+                printf("建築階段結束\n");
+                return 0;
+            }
+            // 獲得發展卡
+            while (1)
+            {
+                int option_2 = 0;
+                #if WINDOWS
+                option_2 = rand() % 25;
+                #else
+                option_2 = arc4random_uniform(25);
+                #endif
+                
+                if (system_setting.bank_develop_card[option_2])
+                {
+                    system_setting.bank_develop_card[option_2] -= 1;
+                    player_list[player].develop_cards[option_2] += 1;
+                    player_list[player].new_develop_card = option_2;
+                    printf("玩家%d購買了一張發展卡！\n", player);
+                    printf("建築階段結束\n");
+                    return 0;
+                }
+            }
+        }
+        if (option == 3)
+        {
+            // 檢查城市數量
+            int city_count = 0;
+            for (int i = 0; i < MAX_CITIES; i++)
+            {
+                city_count += (player_list[player].city[i]) ? 1 : 0;
+            }
+            // 檢查村莊數量
+            int village_count = 0;
+            for (int i = 0; i < MAX_VILLAGES; i++)
+            {
+                village_count += (player_list[player].village[i]) ? 1 : 0;
+            }
+            // 檢查資源
+            int resource_check = 0;
+            if (player_list[player].resource[0] >= 2 && player_list[player].resource[3] >= 3)
+            {
+                resource_check = 1;
+            }
+            //
+            if (city_count == MAX_CITIES || village_count == 0 || resource_check == 0)
+            {
+                option = 1;
+            }
+            else
+            {
+                int option_2 = 0;
+                #if WINDOWS
+                option_2 = rand() % village_count;
+                #else
+                option_2 = arc4random_uniform(village_count);
+                #endif
+                
+                printf("玩家%d將村莊%d升級成城市！\n", player, player_list[player].village[option_2]);
+                for (int i = 0 ; i < MAX_CITIES; i++)
+                {
+                    if (player_list[player].city[i] == 0)
+                    {
+                        player_list[player].city[i] = player_list[player].village[option_2];
+                        player_list[player].village[option_2] = 0;
+                        break;
+                    }
+                }
+            }
+        }
+        if (option == 2)
+        {
+            // 檢查村莊數量
+            int village_count = 0;
+            for (int i = 0; i < MAX_VILLAGES; i++)
+            {
+                village_count += (player_list[player].village[i]) ? 1 : 0;
+            }
+            // 檢查資源
+            int resource_check = 0;
+            if (player_list[player].resource[0] >= 1 && player_list[player].resource[1] >= 1 && player_list[player].resource[2] >= 1 && player_list[player].resource[4] >= 1)
+            {
+                resource_check = 1;
+            }
+            //
+            if (village_count >= MAX_VILLAGES || resource_check == 0)
+            {
+                option = 1;
+            }
+            else
+            {
+                for (int i = 0; i < 10000; i++)
+                {
+                    int option_2 = 0;
+                    #if WINDOWS
+                    option_2 = (rand() % 54) + 1;
+                    #else
+                    option_2 = arc4random_uniform(54) + 1;
+                    #endif
+                    
+                    int valid_flag = 0;
+                    for (int j = 0; j < 2 * MAX_ROADS; j++)
+                    {
+                        valid_flag += (player_list[player].road[j / 2][j % 2] == option_2) ? 1 : 0;
+                    }
+                    // 如果該處已經有村莊或城市
+                    for (int j = 0; j < MAX_VILLAGES * system_setting.player_num; j++)
+                    {
+                        if (player_list[j / MAX_VILLAGES].village[j % MAX_VILLAGES] == option_2)
+                        {
+                            valid_flag = 0;
+                            break;
+                        }
+                    }
+                    for (int j = 0; j < MAX_CITIES * system_setting.player_num; j++)
+                    {
+                        if (player_list[j / MAX_CITIES].city[j % MAX_CITIES] == option_2)
+                        {
+                            valid_flag = 0;
+                            break;
+                        }
+                    }
+                    // 如果附近已有村莊或城市
+                    for (int j = 0; j < 3; j++)
+                    {
+                        for (int k = 0; k < MAX_VILLAGES * system_setting.player_num; k++)
+                        {
+                            if (player_list[k / MAX_VILLAGES].village[k % MAX_VILLAGES] == connectedPoint[option_2][j])
+                            {
+                                valid_flag = 0;
+                                break;
+                            }
+                        }
+                        for (int k = 0; k < MAX_CITIES * system_setting.player_num; k++)
+                        {
+                            if (player_list[k / MAX_CITIES].city[k % MAX_CITIES] == connectedPoint[option_2][j])
+                            {
+                                valid_flag = 0;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (valid_flag > 0)
+                    {
+                        for (int j = 0; j < MAX_VILLAGES; j++)
+                        {
+                            if (player_list[player].village[j] == 0)
+                            {
+                                player_list[player].village[j] = option_2;
+                            }
+                            break;
+                        }
+                        printf("玩家%d建造了村莊%d！\n", player, option_2);
+                        return 0;
+                    }
+                }
+            }
+        }
+        // option == 1
+        // 檢查資源
+        if (player_list[player].resource[1] < 1 || player_list[player].resource[4] < 1)
+        {
+            printf("建築階段結束\n");
+            return 0;
+        }
+        // 檢查道路數量
+        if (player_list[player].num_roads >= MAX_ROADS)
+        {
+            printf("建築階段結束\n");
+            return 0;
+        }
+        
+        for (int i = 0; i < 10000; i++)
+        {
+            int road_1 = 0, road_2 = 0;
+            
+            // 選現有道路上其中一點為 road_1
+            while (1)
+            {
+                #if WINDOWS
+                road_1 = rand() % 30;
+                #else
+                road_1 = arc4random_uniform(30);
+                #endif
+                
+                if (player_list[player].road[road_1 / 2][road_1 % 2] != 0)
+                {
+                    road_1 = player_list[player].road[road_1 / 2][road_1 % 2];
+                    break;
+                }
+            }
+            while (1)
+            {
+                #if WINDOWS
+                road_2 = rand() % 3;
+                #else
+                road_2 = arc4random_uniform(3);
+                #endif
+                
+                road_2 = connectedPoint[road_1][road_2];
+                
+                if (road_2 != 0)
+                {
+                    break;
+                }
+            }
+            
+            if (check_connected(road_1, road_2) == 0)
+            {
+                continue;
+            }
+            else if (check_if_has_road(player_list, road_1, road_2) == 1)
+            {
+                continue;
+            }
+            else if (check_if_connected_build(player_list, player, road_1, road_2) == 0)
+            {
+                continue;
+            }
+            printf("玩家%d已建造道路 %d,%d！\n", player, road_1, road_2);
+            add_road_to_player(player_list, player, road_1, road_2);
+        }
         return 0;
     }
     // 玩家
@@ -612,7 +866,12 @@ int build(Player *player_list, int player)
                     continue;
                 }
                 
-                int valid_flag = 1;
+                int valid_flag = 0;
+                // 如果沒有鄰近自己的道路
+                for (int i = 0; i < 2 * MAX_ROADS; i++)
+                {
+                    valid_flag += (player_list[player].road[i / 2][i % 2] == option_2) ? 1 : 0;
+                }
                 // 如果該處已經有村莊或城市
                 for (int i = 0; i < MAX_VILLAGES * system_setting.player_num; i++)
                 {
@@ -651,7 +910,7 @@ int build(Player *player_list, int player)
                     }
                 }
                 
-                if (valid_flag)
+                if (valid_flag > 0)
                 {
                     int option_3 = 0;
                     while (1)
