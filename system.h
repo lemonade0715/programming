@@ -23,9 +23,10 @@ void print_allResource(Player player_list[], System *system);
 
 void print_systemMsg(System *system_setting);
 
-void print_playerMsg(Player player_list[], System *system);
+int refresh(Player *player_list, System system_setting);
 
-void print_userMsg(Player player_list[], System *system);
+void calculate_player_longest_road(Player *player_list, int player_id);
 
+int calculate_longest_road(Player *player_list, int player_id, int current_node, int visited_nodes[MAX_ROADS][2], int visited_count);
 
 #endif
