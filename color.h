@@ -1,10 +1,15 @@
 #pragma once
 #include <stdio.h>
 #define RED "\033[0;32;31m"
+#define RED2 "\033[0;32;41m"
 #define BROWN "\033[0;33m"
 #define GREEN "\033[0;32;32m"
+#define GREEN2 "\033[0;32;42m"
 #define LIGHT_GREEN "\033[1;32m"
 #define BLUE "\033[0;32;34m"
+#define BLUE2 "\033[0;32;44m"
+#define PURPLE "\033[0;35m"
+#define PURPLE2 "\033[0;45m"
 #define YELLOW "\033[1;33m"
 #define LIGHT_GRAY "\033[0;37m"
 #define NONE "\033[m"
