@@ -497,7 +497,80 @@ int build(Player *player_list, int player)
         }
         else if (option == 1)
         {
-            // TODO: ...
+            // 檢查資源是否足夠
+            if (player_list[player].resource[1] < 1 || player_list[player].resource[4] < 1)
+            {
+                printf("您的資源不足！建造道路需要1個木頭、1個磚頭！\n");
+                continue;
+            }
+            
+            while (1)
+            {
+                int road_1 = 0, road_2 = 0;
+                printf("請選擇您要蓋的道路（例如17,23，回上頁請輸入0,0）：");
+                if (scanf("%d,%d", &road_1, &road_2) != 2)
+                {
+                    while (getchar() != '\n');
+                    continue;
+                }
+                while (getchar() != '\n');
+                if (road_1 == 0 && road_2 == 0)
+                {
+                    break;
+                }
+                else if (road_1 == 0 || road_2 == 0) // xor
+                {
+                    printf("道路的兩個頂點皆需輸入 1-54 的數值！\n");
+                    continue;
+                }
+                else if (road_1 == road_2)
+                {
+                    printf("道路的兩端點不能為同一點！\n");
+                    continue;
+                }
+                else if (check_connected(road_1, road_2) == 0)
+                {
+                    printf("您選取的點 %d 與 %d 無法構成一個有效的道路！\n", road_1, road_2);
+                    continue;
+                }
+                else if (check_if_has_road(player_list, road_1, road_2) == 1)
+                {
+                    printf("您選取的道路 %d,%d 已經被佔有！\n", road_1, road_2);
+                    continue;
+                }
+                else if (check_if_connected_build(player_list, player, road_1, road_2) == 0)
+                {
+                    printf("您選取的道路 %d,%d 沒有跟您的其它道路或建築連接！\n", road_1, road_2);
+                    continue;
+                }
+                // 已確認道路合法、資源足夠
+                while (1)
+                {
+                    int option_2 = 0;
+                    printf("請確認您是否要用1個木頭、1個磚頭建造道路 %d,%d？（0:否 1:是）：", road_1, road_2);
+                    if (scanf("%d", &option_2) != 1)
+                    {
+                        while (getchar() != '\n');
+                        continue;
+                    }
+                    while (getchar() != '\n');
+                    if (option_2 != 0 && option_2 != 1)
+                    {
+                        continue;
+                    }
+                    else if (option_2 == 0)
+                    {
+                        break;
+                    }
+                    // option_2 == 1
+                    printf("您已成功用1個木頭、1個磚頭建造道路 %d,%d！\n", road_1, road_2);
+                    player_list[player].resource[1] -= 1;
+                    player_list[player].resource[4] -= 1;
+                    add_road_to_player(player_list, player, road_1, road_2);
+                    break;
+                }
+                break;
+            }
         }
         else if (option == 2)
         {
@@ -1266,7 +1339,74 @@ int use_develop_card(Player *player_list, int player)
                 }
                 else if (option == 16 || option == 17) // 道路建設
                 {
-                    // TODO: 道路建設
+                    for (int k = 0; k < 2; k++)
+                    {
+                        while (1)
+                        {
+                            int road_1 = 0, road_2 = 0;
+                            printf("請選擇您要蓋的道路（例如17,23，回上頁請輸入0,0）：");
+                            if (scanf("%d,%d", &road_1, &road_2) != 2)
+                            {
+                                while (getchar() != '\n');
+                                continue;
+                            }
+                            while (getchar() != '\n');
+                            if (road_1 == 0 && road_2 == 0)
+                            {
+                                break;
+                            }
+                            else if (road_1 == 0 || road_2 == 0) // xor
+                            {
+                                printf("道路的兩個頂點皆需輸入 1-54 的數值！\n");
+                                continue;
+                            }
+                            else if (road_1 == road_2)
+                            {
+                                printf("道路的兩端點不能為同一點！\n");
+                                continue;
+                            }
+                            else if (check_connected(road_1, road_2) == 0)
+                            {
+                                printf("您選取的點 %d 與 %d 無法構成一個有效的道路！\n", road_1, road_2);
+                                continue;
+                            }
+                            else if (check_if_has_road(player_list, road_1, road_2) == 1)
+                            {
+                                printf("您選取的道路 %d,%d 已經被佔有！\n", road_1, road_2);
+                                continue;
+                            }
+                            else if (check_if_connected_build(player_list, player, road_1, road_2) == 0)
+                            {
+                                printf("您選取的道路 %d,%d 沒有跟您的其它道路或建築連接！\n", road_1, road_2);
+                                continue;
+                            }
+                            // 已確認道路合法
+                            while (1)
+                            {
+                                int option_2 = 0;
+                                printf("請確認您是否要用1個木頭、1個磚頭建造道路 %d,%d？（0:否 1:是）：", road_1, road_2);
+                                if (scanf("%d", &option_2) != 1)
+                                {
+                                    while (getchar() != '\n');
+                                    continue;
+                                }
+                                while (getchar() != '\n');
+                                if (option_2 != 0 && option_2 != 1)
+                                {
+                                    continue;
+                                }
+                                else if (option_2 == 0)
+                                {
+                                    break;
+                                }
+                                // option_2 == 1
+                                printf("您已成功建造道路 %d,%d！\n", road_1, road_2);
+                                add_road_to_player(player_list, player, road_1, road_2);
+                                break;
+                            }
+                            break;
+                        }
+                    }
                 }
                 else if (option == 18 || option == 19) // 創新發明
                 {
@@ -1375,7 +1515,7 @@ int use_develop_card(Player *player_list, int player)
     if (player_list[player].develop_cards[option] == 1)
     {
         printf("玩家%d使用發展卡 - %d. %s！\n", player, option, develop_card_name[option]);
-        if (option < 14) // 騎士卡
+        if (option < 14) // 騎士卡(電腦)
         {
             int robber_position = -1;
             int robber_position_prev = 0;
@@ -1435,78 +1575,17 @@ int use_develop_card(Player *player_list, int player)
                 return 0;
             }
             
-            if (player != 0)
-            {
-                while (1)
-                {
-                    int option = 0;
-                    #if WINDOWS
-                    option = rand() % system_setting.player_num;
-                    #else
-                    option = arc4random_uniform(system_setting.player_num);
-                    #endif
-                
-                    if (option == player || robbable_players[option] == 0)
-                    {
-                        continue;
-                    }
-                    // 搶奪該位玩家的資源卡
-                    int temp_rob;
-                    #if WINDOWS
-                    temp_rob = rand() % player_list[option].total_resource;
-                    #else
-                    temp_rob = arc4random_uniform(player_list[option].total_resource);
-                    #endif
-                    
-                    for (int i = 0; i < 5; i++)
-                    {
-                        if (temp_rob < player_list[option].resource[i])
-                        {
-                            printf("玩家%d已從玩家%d搶奪1個%s！\n", player, option, resource_name[i]);
-                            player_list[option].resource[i] -= 1;
-                            player_list[player].resource[i] += 1;
-                            player_list[option].total_resource -= 1;
-                            player_list[player].total_resource += 1;
-                            break;
-                        }
-                        temp_rob -= player_list[option].resource[i];
-                    }
-                    break;
-                }
-                return 0;
-            }
-            // 人類玩家
-            printf("您可以搶奪資源卡的玩家：\n");
-            for (int i = 0; i < 4; i++)
-            {
-                if (robbable_players[i])
-                {
-                    printf("%d. 玩家%d,\t", i, i);
-                }
-            }
             while (1)
             {
                 int option = 0;
-                printf("請問您要搶奪哪一位玩家？");
-                if (scanf("%d", &option) != 1)
+                #if WINDOWS
+                option = rand() % system_setting.player_num;
+                #else
+                option = arc4random_uniform(system_setting.player_num);
+                #endif
+            
+                if (option == player || robbable_players[option] == 0)
                 {
-                    while (getchar() != '\n');
-                    continue;
-                }
-                while (getchar() != '\n');
-                if (option < 0 || option >= system_setting.player_num)
-                {
-                    printf("請輸入0~%d之間的值！\n", system_setting.player_num - 1);
-                    continue;
-                }
-                else if (option == player)
-                {
-                    printf("不能搶奪自己的資源卡！\n");
-                    continue;
-                }
-                else if (robbable_players[option] == 0)
-                {
-                    printf("該位玩家在強盜所在板塊的附近沒有村莊或城市！\n");
                     continue;
                 }
                 // 搶奪該位玩家的資源卡
@@ -1521,7 +1600,7 @@ int use_develop_card(Player *player_list, int player)
                 {
                     if (temp_rob < player_list[option].resource[i])
                     {
-                        printf("您已從玩家%d搶奪1個%s！\n", option, resource_name[i]);
+                        printf("玩家%d已從玩家%d搶奪1個%s！\n", player, option, resource_name[i]);
                         player_list[option].resource[i] -= 1;
                         player_list[player].resource[i] += 1;
                         player_list[option].total_resource -= 1;
@@ -1532,8 +1611,9 @@ int use_develop_card(Player *player_list, int player)
                 }
                 break;
             }
+            return 0;
         }
-        else if (option == 14 || option == 15) // 資源壟斷
+        else if (option == 14 || option == 15) // 資源壟斷(電腦)
         {
             #if WINDOWS
             option_2 = rand() % 5;
@@ -1554,11 +1634,11 @@ int use_develop_card(Player *player_list, int player)
                 player_list[i].total_resource = 0;
             }
         }
-        else if (option == 16 || option == 17) // 道路建設
+        else if (option == 16 || option == 17) // 道路建設(電腦)
         {
             // TODO: 道路建設
         }
-        else if (option == 18 || option == 19) // 創新發明
+        else if (option == 18 || option == 19) // 創新發明(電腦)
         {
             while (1)
             {
