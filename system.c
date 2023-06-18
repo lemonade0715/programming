@@ -43,28 +43,24 @@ int special_show(System *system, int32_t i){
     }
 }
 
-void print_userMsg(Player player_list[], System *system){
-        printf(BLUE"自己: \n");
-        printf("\t你的資源: %d\n"NONE, player_list[0].total_resource);
-        if( special_show(system, 0) ){
-            printf("\t你的成就: ");
-            if(system->lr_player == 0){
-                printf(BROWN"最長的道路 "NONE);
-            }
-            if(system->mk_player == 0){
-                printf(BROWN"最大的騎士 "NONE);
-            }
-            printf("\n");
-        }
-}
-
 void print_allResource(Player player_list[], System *system){
     const char resource_name[][7] = {"小麥", "木頭", "羊毛", "石頭", "磚頭"};
-    printf(BLUE"\n你擁有的資源: %d\n", player_list[0].total_resource);
+    printf(BLUE"\n你的資源: \n");
+    printf("玩家0: %d\n", player_list[0].total_resource);
     for(int32_t i = 0; i < 5; ++i){
         printf("  %s: %d\t", resource_name[i], player_list[0].resource[i]);
     }
     printf(NONE);
+    if( special_show(system, 0) ){
+        printf("\t你的成就: ");
+        if(system->lr_player == 0){
+            printf(BROWN"最長的道路 "NONE);
+        }
+        if(system->mk_player == 0){
+            printf(BROWN"最大的騎士 "NONE);
+        }
+        printf("\n");
+    }
     printf("\n其他玩家擁有的資源: \n");
     for(int32_t i = 1; i < system->player_num; ++i){
         if(i == 1)          printf(RED);
@@ -77,17 +73,6 @@ void print_allResource(Player player_list[], System *system){
         }
 #endif
         printf("\n");
-    }
-}
-
-
-void print_playerMsg(Player player_list[], System *system){
-    for(int32_t i = 1; i<system->player_num; ++i){
-        if(i == 1)          printf(RED);
-        else if(i == 2)     printf(GREEN);
-        else if(i == 3)     printf(YELLOW);
-        printf("玩家%d:\n", i);
-        printf("\t玩家資源: %d\n"NONE, player_list[i].total_resource);
         if( special_show(system, i) ){
             printf("\t成就: ");
             if(system->lr_player == i){
@@ -99,7 +84,5 @@ void print_playerMsg(Player player_list[], System *system){
             printf("\n");
         }
     }
-    print_userMsg(player_list, system);
-    return ;
 }
 
