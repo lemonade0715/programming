@@ -65,10 +65,16 @@ void generateCatanTiles(struct CatanTile* tiles);
 void printCatanTiles(struct CatanTile* tiles);
 void shuffleResource(enum ResourceType* array, int length);
 void shuffleNumbers(int* array, int length);
-//道路連接
+
+// 道路連接
+
+// 確認這兩個點能夠連成一個道路 return 0 or 1
 int8_t check_connected(int p1, int p2);
+// 確認這條道路是否已經被任何人佔有 return 0 or 1 （不保證能夠連成一個道路）
 int8_t check_if_has_road(Player *playlist, int p1, int p2);
+// 確認這條道路是否有連接在自己的道路或建築 return 0 or 1 （不保證能夠連成一個道路、不保證未佔用）
 int8_t check_if_connected_build(Player *playlist, int currentPlayer, int p1, int p2);
+// 以上三項依序確認才能使用這一項
 void add_road_to_player(Player *playlist, int currentPlayer, int p1, int p2);
 int max_connected_length(Player *player);
 //
