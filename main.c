@@ -200,9 +200,8 @@ int trade(Player *player_list, int player)
                 printf("\n交易階段結束");
                 return 0;
             }
-            else if (option > 0 && option < system_setting.player_num)
+            else if (option > 0 && option < system_setting.player_num) // 玩家交易
             {
-                // TODO: Trade with other players
                 int object_id = option;
                 printf("\n你想要用哪個資源與玩家%d進行兌換？可用任意數量\n（0.放棄 1.小麥 2.木頭 3.羊毛 4.石頭 5.磚頭）：", option);
                 if (scanf("%d", &option) != 1)
@@ -216,7 +215,7 @@ int trade(Player *player_list, int player)
                 else if(option < 0 || option > 5) printf("交易失敗，請輸入0-5之間的數值\n");
                 else trade_with_player(player_list, object_id, option);
             }
-            else if (option == system_setting.player_num)
+            else if (option == system_setting.player_num) // 銀行交易
             {
                 while (1)
                 {
@@ -464,7 +463,7 @@ int trade(Player *player_list, int player)
         return 0;
     }
     
-    // TODO: computer player
+    // 電腦玩家
     computer_trade(player_list, player, &system_setting, tiles);
     return 0;
 }
