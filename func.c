@@ -144,7 +144,7 @@ int refresh(Player *player_list, System system_setting)
         }
     }
     
-    // TODO: Count village, city
+    // TODO: Count road, village, city
     
     
     // TODO: Check longest road
