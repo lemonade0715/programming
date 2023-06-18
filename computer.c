@@ -6,10 +6,160 @@
 #include "system.h"
 #include "computer.h"
 
-void computer_trade(Player *player_list, int player, System *system_setting, struct CatanTile tiles[19])
+void computer_trade(Player *player_list, int player, System *sys, struct CatanTile tiles[19])
 {
+    // printf("\n玩家%d放棄交易\n", player);
+    // return ;
+    int NPC_src[5] = {0};
+    int total_src = 0;
     for(int32_t i = 0; i < 5; ++i){
-        // if( player_list[player].resource[i] >= 4 )
+        NPC_src[i] = player_list[player].resource[i];
+        total_src += NPC_src[i];
+    }
+    if(player_list[player].NPC_difficulty != 1 && total_src < 4){
+        printf("\n玩家%d放棄交易\n", player);
+        return ;
+    } else if(player_list[player].NPC_difficulty != 1){
+        int src = rand() % 5;
+        while(!NPC_src[src]){
+            src = rand() % 5;
+        }
+        int src_trade = rand() % NPC_src[src] + 1;
+        while(src_trade > NPC_src[src]){
+            src_trade = rand() % NPC_src[src] + 1;
+        }
+        int32_t object = rand() % sys->player_num;
+        while(object == player){
+            object = rand() % sys->player_num;
+        } 
+        int object_src = rand() % 5;
+        while(object_src == src && !player_list[object].resource[object_src]){
+            object_src = rand() % 5;
+        }
+        int object_trade = rand() % player_list[object].resource[object_src] + 1;
+        while(object_trade > player_list[object].resource[object_src]){
+            object_trade = rand() % player_list[object].resource[object_src] + 1;
+        }
+        if(!object){
+            printf("\n玩家%d想要用%d個%s與玩家%d交換%d個%s\n", player, src_trade, resource_name[src], object, object_trade, resource_name[object_src]);
+            int option = 0;
+            while (1){
+                printf("你是否同意交易？（0.拒絕 1.同意）：");
+                if(scanf("%d", &option) != 1){
+                    printf("請重新輸入0或1代表拒絕或同意交易\n");
+                    while(getchar() != '\n');
+                } else if(option != 0 && option != 1){
+                    printf("請重新輸入0或1代表拒絕或同意交易\n");
+                } else {
+                    break;
+                }
+            }
+            if(option){
+                player_list[player].resource[src] += object_trade;
+                player_list[player].resource[object_src] -= object_trade;
+                player_list[object].resource[src] -= src_trade;
+                player_list[object].resource[object_src] += src_trade;
+                player_list[player].total_resource += object_trade - src_trade;
+                player_list[object].total_resource += src_trade - object_trade;
+                printf("你同意了交易\n");
+                return ;
+            } else {
+                printf("你拒絕了交易\n");
+                return;
+            }
+
+        } else {
+            printf("\n玩家%d想要用%d個%s與玩家%d交換%d個%s\n", player, src_trade, resource_name[src], object, object_trade, resource_name[object_src]);
+            int option = rand() % 2;
+            if(option){
+                player_list[player].resource[src] += object_trade;
+                player_list[player].resource[object_src] -= object_trade;
+                player_list[object].resource[src] -= src_trade;
+                player_list[object].resource[object_src] += src_trade;
+                player_list[player].total_resource += object_trade - src_trade;
+                player_list[object].total_resource += src_trade - object_trade;
+                printf("玩家%d同意了交易\n", object);
+                return ;
+            } else {
+                printf("玩家%d拒絕了交易\n", object);
+                return;
+            }
+
+        }
+    }
+    if(player_list[player].NPC_difficulty != 1){
+        return ;
+    }
+    // difficulty == 1
+    if(total_src < 3){
+        printf("\n玩家%d放棄交易\n", player);
+        return ;
+    } else {
+        int src1 = 0, src2 = 0;
+        int max_src = NPC_src[0], min_src = NPC_src[0];
+        for(int32_t i = 0; i < 5; ++i){
+            if(NPC_src[i] > max_src){
+                max_src = NPC_src[i];
+                src1 = i;
+            }
+            if(NPC_src[i] < min_src){
+                min_src = NPC_src[i];
+                src2 = i;
+            }
+        }
+        int src_trade = rand() % NPC_src[src1] + 1;
+        int obj_src = src2;
+        int32_t object = rand() % sys->player_num;
+        while(object == player){
+            object = rand() % sys->player_num;
+        }
+        int object_trade = rand() % player_list[object].resource[obj_src] + 1;
+        if(!object){
+            printf("\n玩家%d想要用%d個%s與玩家%d交換%d個%s\n", player, src_trade, resource_name[src1], object, object_trade, resource_name[obj_src]);
+            int option = 0;
+            while (1){
+                printf("你是否同意交易？（0.拒絕 1.同意）：");
+                if(scanf("%d", &option) != 1){
+                    printf("請重新輸入0或1代表拒絕或同意交易\n");
+                    while(getchar() != '\n');
+                } else if(option != 0 && option != 1){
+                    printf("請重新輸入0或1代表拒絕或同意交易\n");
+                } else {
+                    break;
+                }
+            }
+            if(option){
+                player_list[player].resource[src1] += object_trade;
+                player_list[player].resource[obj_src] -= object_trade;
+                player_list[object].resource[src1] -= src_trade;
+                player_list[object].resource[obj_src] += src_trade;
+                player_list[player].total_resource += object_trade - src_trade;
+                player_list[object].total_resource += src_trade - object_trade;
+                printf("你同意了交易\n");
+                return ;
+            } else {
+                printf("你拒絕了交易\n");
+                return;
+            }
+
+        } else {
+            printf("\n玩家%d想要用%d個%s與玩家%d交換%d個%s\n", player, src_trade, resource_name[src1], object, object_trade, resource_name[obj_src]);
+            int option = rand() % 2;
+            if(option){
+                player_list[player].resource[src1] += object_trade;
+                player_list[player].resource[obj_src] -= object_trade;
+                player_list[object].resource[src1] -= src_trade;
+                player_list[object].resource[obj_src] += src_trade;
+                player_list[player].total_resource += object_trade - src_trade;
+                player_list[object].total_resource += src_trade - object_trade;
+                printf("玩家%d同意了交易\n", object);
+                return ;
+            } else {
+                printf("玩家%d拒絕了交易\n", object);
+                return;
+            }
+
+        }
     }
 }
 
