@@ -1,5 +1,7 @@
 main
 test
+main_demo
+test_demo
 test.txt
 *.o
 *.DS_Store
