@@ -275,12 +275,19 @@ int8_t check_if_connected_build(Player *playlist, int currentPlayer, int p1, int
 void add_road_to_player(Player *playlist, int currentPlayer, int p1, int p2) {
     Player player = playlist[currentPlayer];
     int roadIdx = 0;
+    // TODO: remove the following!
+    printf("%d,%d\n", player.road[2][0], player.road[2][1]);
+    //
     for (roadIdx = 0; roadIdx < 15; ++roadIdx)
     {
         if (player.road[roadIdx][0] == 0 && player.road[roadIdx][1] == 0)
         {
             player.road[roadIdx][0] = p1;
             player.road[roadIdx][1] = p2;
+            // TODO: remove the following!
+            player.road[3][0] = 6;
+            player.road[3][1] = 9;
+            //
             return;
         }
     }

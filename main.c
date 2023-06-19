@@ -2301,6 +2301,9 @@ void init_player(Player *players, System *system_setting){
         }
         for(int32_t j = 0; j < 5; ++j){
             players[i].resource[j] = 0;
+            // TODO: remove the following!!!
+            players[0].resource[j] = 99;
+            //
         }
         for(int32_t j = 0; j < 25; ++j){
             players[i].develop_cards[j] = 0;
