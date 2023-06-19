@@ -71,6 +71,7 @@ int main()
     set_village(player_list, &system_setting, tiles);
     srand(time(NULL));
     game_state = State_Production;
+    refresh(player_list, system_setting);
     
     while (1)
     {
@@ -87,7 +88,7 @@ int main()
         //
         
         sleep(1);
-        //
+        /*
         printf("---------------------\n");
         printf("<Player %d status>\n", current_player);
         printf("village: %d %d %d %d %d\n", player_list[current_player].village[0], player_list[current_player].village[1], player_list[current_player].village[2], player_list[current_player].village[3], player_list[current_player].village[4]);
@@ -100,14 +101,14 @@ int main()
         printf("\n");
         printf("resource: %d %d %d %d %d\n", player_list[current_player].resource[0], player_list[current_player].resource[1], player_list[current_player].resource[2], player_list[current_player].resource[3], player_list[current_player].resource[4]);
         printf("---------------------\n");
-        //
+        */
         printf("\n\033[1m【玩家%d - 收成階段】\033[0m\n", current_player);
         production(player_list, current_player);
         game_state = State_Trade;
         refresh(player_list, system_setting);
         
         sleep(1);
-        //
+        /*
         printf("---------------------\n");
         printf("<Player %d status>\n", current_player);
         printf("village: %d %d %d %d %d\n", player_list[current_player].village[0], player_list[current_player].village[1], player_list[current_player].village[2], player_list[current_player].village[3], player_list[current_player].village[4]);
@@ -120,14 +121,14 @@ int main()
         printf("\n");
         printf("resource: %d %d %d %d %d\n", player_list[current_player].resource[0], player_list[current_player].resource[1], player_list[current_player].resource[2], player_list[current_player].resource[3], player_list[current_player].resource[4]);
         printf("---------------------\n");
-        //
+        */
         printf("\n\033[1m【玩家%d - 交易階段】\033[0m", current_player);
         trade(player_list, current_player);
         game_state = State_Build;
         refresh(player_list, system_setting);
         
         sleep(1);
-        //
+        /*
         printf("---------------------\n");
         printf("<Player %d status>\n", current_player);
         printf("village: %d %d %d %d %d\n", player_list[current_player].village[0], player_list[current_player].village[1], player_list[current_player].village[2], player_list[current_player].village[3], player_list[current_player].village[4]);
@@ -140,7 +141,7 @@ int main()
         printf("\n");
         printf("resource: %d %d %d %d %d\n", player_list[current_player].resource[0], player_list[current_player].resource[1], player_list[current_player].resource[2], player_list[current_player].resource[3], player_list[current_player].resource[4]);
         printf("---------------------\n");
-        //
+        */
         printf("\n\n\033[1m【玩家%d - 建築階段】\033[0m\n", current_player);
         build(player_list, current_player);
         game_state = State_Production;
@@ -2015,7 +2016,7 @@ int use_develop_card(Player *player_list, int player)
         }
         else if (option == 16 || option == 17) // 道路建設(電腦)
         {
-            // TODO: 道路建設
+            // TODO: ...
         }
         else if (option == 18 || option == 19) // 創新發明(電腦)
         {
@@ -2196,7 +2197,6 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
             continue;
         }
         
-        printf("!!!");
         usleep(500000);
         if (players[i].NPC_difficulty == 1)
         {
@@ -2303,8 +2303,6 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
             }
         }
     }
-    
-    printf("??????");
     
     for (int32_t i = sys->player_num-1; i >= 0; --i)
     {
@@ -2621,7 +2619,7 @@ void init_player(Player *players, System *system_setting){
         for(int32_t j = 0; j < 5; ++j){
             players[i].resource[j] = 0;
             // TODO: remove the following!!!
-            players[0].resource[j] = 99;
+            // players[0].resource[j] = 99;
             //
         }
         for(int32_t j = 0; j < 25; ++j){
