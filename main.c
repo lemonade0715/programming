@@ -2193,7 +2193,10 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
                 refresh(players, *sys);
                 break;
             }
+            continue;
         }
+        
+        printf("!!!");
         usleep(500000);
         if (players[i].NPC_difficulty == 1)
         {
@@ -2264,8 +2267,45 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
                 break;
             }
             build_village(players, i, random_point);
+            
+            // 蓋道路
+            for (int k = 0; k < 3; k++)
+            {
+                if (connectedPoint[random_point][k] == 0)
+                {
+                    continue;
+                }
+                else if (check_connected(random_point, connectedPoint[random_point][k]) == 0)
+                {
+                    continue;
+                }
+                else if (check_if_has_road(players, random_point, connectedPoint[random_point][k]) == 1)
+                {
+                    continue;
+                }
+                else if (check_if_connected_build(players, i, random_point, connectedPoint[random_point][k]) == 0)
+                {
+                    continue;
+                }
+                // 已確認道路合法
+                printf("玩家%d已成功建造道路 %d,%d！\n", i, random_point, connectedPoint[random_point][k]);
+                for (int m = 0; m < MAX_ROADS; m++)
+                {
+                    if (players[i].road[m][0] == 0 || players[i].road[m][1] == 0)
+                    {
+                        players[i].road[m][0] = random_point;
+                        players[i].road[m][1] = connectedPoint[random_point][k];
+                        break;
+                    }
+                }
+                refresh(players, *sys);
+                break;
+            }
         }
     }
+    
+    printf("??????");
+    
     for (int32_t i = sys->player_num-1; i >= 0; --i)
     {
         if(i == 0)
@@ -2469,7 +2509,7 @@ void set_village(Player *players, System *sys, struct CatanTile *tiles){
                 refresh(players, *sys);
                 break;
             }
-            return;
+            continue;
         }
     }
 }
