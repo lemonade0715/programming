@@ -20,7 +20,7 @@ int connectedPoint[55][3] = {
     {2,6,10}, {5,11,0}, {8,13,0},{3,7,14}, {4,10,15},
     {5,9,16}, {6,12,17},{11,18,0},{7,19,0},{8,15,20},
     {9,14,21},{10,17,22},{11,16,23},{12,24,0},{13,20,25},
-    {14,19,26},{15,22,27},{16,21,28},{17,24,19},{18,23,30},
+    {14,19,26},{15,22,27},{16,21,28},{17,24,29},{18,23,30},
     {19,31,0},{20,27,32},{21,26,33},{22,29,34},{23,28,35},
     {24,36,0},{25,32,37},{26,31,38},{27,34,39},{28,33,40},
     {29,36,41},{30,35,42},{31,43,0},{32,39,44},{33,38,45},
@@ -272,22 +272,16 @@ int8_t check_if_connected_build(Player *playlist, int currentPlayer, int p1, int
     return 0;
 }
 
+// 棄用
 void add_road_to_player(Player *playlist, int currentPlayer, int p1, int p2) {
     Player player = playlist[currentPlayer];
     int roadIdx = 0;
-    // TODO: remove the following!
-    printf("%d,%d\n", player.road[2][0], player.road[2][1]);
-    //
     for (roadIdx = 0; roadIdx < 15; ++roadIdx)
     {
         if (player.road[roadIdx][0] == 0 && player.road[roadIdx][1] == 0)
         {
             player.road[roadIdx][0] = p1;
             player.road[roadIdx][1] = p2;
-            // TODO: remove the following!
-            player.road[3][0] = 6;
-            player.road[3][1] = 9;
-            //
             return;
         }
     }

@@ -789,7 +789,15 @@ int build(Player *player_list, int player)
                 continue;
             }
             printf("玩家%d已建造道路 %d,%d！\n", player, road_1, road_2);
-            add_road_to_player(player_list, player, road_1, road_2);
+            for (int m = 0; m < MAX_ROADS; m++)
+            {
+                if (player_list[player].road[m][0] == 0 || player_list[player].road[m][1] == 0)
+                {
+                    player_list[player].road[m][0] = road_1;
+                    player_list[player].road[m][1] = road_2;
+                    break;
+                }
+            }
             refresh(player_list, system_setting);
         }
         return 0;
@@ -837,6 +845,11 @@ int build(Player *player_list, int player)
                     printf("道路的兩個頂點皆需輸入 1-54 的數值！\n");
                     continue;
                 }
+                else if (player_list[player].num_roads >= MAX_ROADS)
+                {
+                    printf("您的道路數量已達到上限！\n");
+                    continue;
+                }
                 else if (road_1 == road_2)
                 {
                     printf("道路的兩端點不能為同一點！\n");
@@ -880,7 +893,15 @@ int build(Player *player_list, int player)
                     printf("您已成功用1個木頭、1個磚頭建造道路 %d,%d！\n", road_1, road_2);
                     player_list[player].resource[1] -= 1;
                     player_list[player].resource[4] -= 1;
-                    add_road_to_player(player_list, player, road_1, road_2);
+                    for (int m = 0; m < MAX_ROADS; m++)
+                    {
+                        if (player_list[player].road[m][0] == 0 || player_list[player].road[m][1] == 0)
+                        {
+                            player_list[player].road[m][0] = road_1;
+                            player_list[player].road[m][1] = road_2;
+                            break;
+                        }
+                    }
                     refresh(player_list, system_setting);
                     break;
                 }
@@ -1703,6 +1724,11 @@ int use_develop_card(Player *player_list, int player)
                                 printf("道路的兩端點不能為同一點！\n");
                                 continue;
                             }
+                            else if (player_list[player].num_roads >= MAX_ROADS)
+                            {
+                                printf("您的道路數量已達到上限！\n");
+                                continue;
+                            }
                             else if (check_connected(road_1, road_2) == 0)
                             {
                                 printf("您選取的點 %d 與 %d 無法構成一個有效的道路！\n", road_1, road_2);
@@ -1739,7 +1765,15 @@ int use_develop_card(Player *player_list, int player)
                                 }
                                 // option_2 == 1
                                 printf("您已成功建造道路 %d,%d！\n", road_1, road_2);
-                                add_road_to_player(player_list, player, road_1, road_2);
+                                for (int m = 0; m < MAX_ROADS; m++)
+                                {
+                                    if (player_list[player].road[m][0] == 0 || player_list[player].road[m][1] == 0)
+                                    {
+                                        player_list[player].road[m][0] = road_1;
+                                        player_list[player].road[m][1] = road_2;
+                                        break;
+                                    }
+                                }
                                 refresh(player_list, system_setting);
                                 break;
                             }
@@ -2032,8 +2066,8 @@ void build_village(Player *players, int player, int point_id){
     for(int32_t j = 0; j < MAX_VILLAGES; ++j){
         if(players[player].village[j] == 0){
             players[player].village[j] = point_id;
-            if(!player)     printf("你在%d號板塊建造了村莊！\n", point_id);
-            else            printf("玩家%d在%d號板塊建造了村莊！\n", player, point_id);
+            if(!player)     printf("你在%d號點建造了村莊！\n", point_id);
+            else            printf("玩家%d在%d號點建造了村莊！\n", player, point_id);
             break;
         }
     }
@@ -2082,115 +2116,360 @@ int connect_village_limit(Player *players, int point_id){
 
 void set_village(Player *players, System *sys, struct CatanTile *tiles){
     int option = 0;
-    for(int32_t i = 0; i < sys->player_num; ++i){
-        if(i == 0){
-            while(1){
+    for (int32_t i = 0; i < sys->player_num; ++i)
+    {
+        if (i == 0)
+        {
+            while (1)
+            {
                 printf("\n請選擇你想要建造村莊的位置(1-54)：");
-                if( scanf("%d", &option) != 1){
+                if(scanf("%d", &option) != 1)
+                {
                     while(getchar() != '\n');
                     continue;
                 }
-                while(getchar() != '\n');
-                if(option < 1 || option > 54){
+                while (getchar() != '\n');
+                if (option < 1 || option > 54)
+                {
                     printf("請輸入1-54之間的數字！\n");
                     continue;
                 }
                 break;
             }
             build_village(players, i, option);
-            continue;
-        }
-    usleep(500000);
-        if(players[i].NPC_difficulty == 1){
-            for(int32_t j = 0; j < NUM_TILES; ++j){
-                if(tiles[j].resourceType != Forest && tiles[j].resourceType != Hill){
+            
+            // 蓋道路
+            while (1)
+            {
+                int option_2 = 0;
+                printf("請選擇要蓋的道路 %d,?：", option);
+                if (scanf("%d", &option_2) != 1)
+                {
+                    while (getchar() != '\n');
                     continue;
                 }
-                if( is_has_built(players, tiles[j].corner_id[5])  && !connect_village_limit(players, tiles[j].corner_id[5])){
+                while (getchar() != '\n');
+                if (option_2 < 1 || option_2 > 54)
+                {
+                    printf("道路的兩個頂點皆需輸入 1-54 的數值！\n");
+                    continue;
+                }
+                else if (option == option_2)
+                {
+                    printf("道路的兩端點不能為同一點！\n");
+                    continue;
+                }
+                else if (players[i].num_roads >= MAX_ROADS)
+                {
+                    printf("您的道路數量已達到上限！\n");
+                    continue;
+                }
+                else if (check_connected(option, option_2) == 0)
+                {
+                    printf("您選取的點 %d 與 %d 無法構成一個有效的道路！\n", option, option_2);
+                    continue;
+                }
+                else if (check_if_has_road(players, option, option_2) == 1)
+                {
+                    printf("您選取的道路 %d,%d 已經被佔有！\n", option, option_2);
+                    continue;
+                }
+                else if (check_if_connected_build(players, i, option, option_2) == 0)
+                {
+                    printf("您選取的道路 %d,%d 沒有跟您的其它道路或建築連接！\n", option, option_2);
+                    continue;
+                }
+                // 已確認道路合法
+                printf("您已成功建造道路 %d,%d！\n", option, option_2);
+                for (int m = 0; m < MAX_ROADS; m++)
+                {
+                    if (players[i].road[m][0] == 0 || players[i].road[m][1] == 0)
+                    {
+                        players[i].road[m][0] = option;
+                        players[i].road[m][1] = option_2;
+                        break;
+                    }
+                }
+                refresh(players, *sys);
+                break;
+            }
+        }
+        usleep(500000);
+        if (players[i].NPC_difficulty == 1)
+        {
+            for(int32_t j = 0; j < NUM_TILES; ++j)
+            {
+                if(tiles[j].resourceType != Forest && tiles[j].resourceType != Hill)
+                {
+                    continue;
+                }
+                if (is_has_built(players, tiles[j].corner_id[5]) && !connect_village_limit(players, tiles[j].corner_id[5]))
+                {
                     build_village(players, i, tiles[j].corner_id[5]);
+                    
+                    // 蓋道路
+                    for (int k = 0; k < 3; k++)
+                    {
+                        if (connectedPoint[tiles[j].corner_id[5]][k] == 0)
+                        {
+                            continue;
+                        }
+                        else if (check_connected(tiles[j].corner_id[5], connectedPoint[tiles[j].corner_id[5]][k]) == 0)
+                        {
+                            continue;
+                        }
+                        else if (check_if_has_road(players, tiles[j].corner_id[5], connectedPoint[tiles[j].corner_id[5]][k]) == 1)
+                        {
+                            continue;
+                        }
+                        else if (check_if_connected_build(players, i, tiles[j].corner_id[5], connectedPoint[tiles[j].corner_id[5]][k]) == 0)
+                        {
+                            continue;
+                        }
+                        // 已確認道路合法
+                        printf("玩家%d已成功建造道路 %d,%d！\n", i, tiles[j].corner_id[5], connectedPoint[tiles[j].corner_id[5]][k]);
+                        for (int m = 0; m < MAX_ROADS; m++)
+                        {
+                            if (players[i].road[m][0] == 0 || players[i].road[m][1] == 0)
+                            {
+                                players[i].road[m][0] = tiles[j].corner_id[5];
+                                players[i].road[m][1] = connectedPoint[tiles[j].corner_id[5]][k];
+                                break;
+                            }
+                        }
+                        refresh(players, *sys);
+                        break;
+                    }
                 }
             }
-        } else {
+        }
+        else
+        {
             int32_t random_point = 0;
-            while (1){
+            while (1)
+            {
                 #if WINDOWS
                 random_point = rand() % 54 + 1;
                 #else
                 random_point = arc4random_uniform(54) + 1;
                 #endif
 
-                if(is_has_built(players, random_point)){
+                if (is_has_built(players, random_point))
+                {
                     continue;
                 }
-                if(connect_village_limit(players, random_point)){
-                    continue;;
+                if (connect_village_limit(players, random_point)){
+                    continue;
                 }
                 break;
             }
-
             build_village(players, i, random_point);
         }
     }
-    for(int32_t i = sys->player_num-1; i >= 0; --i){
-        if(i == 0){
+    for (int32_t i = sys->player_num-1; i >= 0; --i)
+    {
+        if(i == 0)
+        {
             print_map_state2(players, tiles, sys, robber_loc);
 
-            while(1){
+            while(1)
+            {
                 printf("請選擇你想要建造村莊的位置：(1-54)\n");
-                if( scanf("%d", &option) != 1){
+                if (scanf("%d", &option) != 1)
+                {
                     while(getchar() != '\n');
                     continue;
                 }
-                while(getchar() != '\n');
-                if(option < 1 || option > 54){
+                while (getchar() != '\n');
+                if (option < 1 || option > 54)
+                {
                     printf("請輸入1-54之間的數字！\n");
                     continue;
                 }
-                if(is_has_built(players, option)){
+                if (is_has_built(players, option))
+                {
                     printf("此處已經有村莊或城市了！\n");
                     continue;
                 }
-                if(connect_village_limit(players, option)){
+                if (connect_village_limit(players, option))
+                {
                     printf("新建的村莊或城市不能與其他村莊或城市相鄰！\n");
                     continue;
                 }
                 break;
             }
             build_village(players, i, option);
+            
+            // 蓋道路
+            while (1)
+            {
+                int option_2 = 0;
+                printf("請選擇要蓋的道路 %d,?：", option);
+                if (scanf("%d", &option_2) != 1)
+                {
+                    while (getchar() != '\n');
+                    continue;
+                }
+                while (getchar() != '\n');
+                if (option_2 < 1 || option_2 > 54)
+                {
+                    printf("道路的兩個頂點皆需輸入 1-54 的數值！\n");
+                    continue;
+                }
+                else if (option == option_2)
+                {
+                    printf("道路的兩端點不能為同一點！\n");
+                    continue;
+                }
+                else if (players[i].num_roads >= MAX_ROADS)
+                {
+                    printf("您的道路數量已達到上限！\n");
+                    continue;
+                }
+                else if (check_connected(option, option_2) == 0)
+                {
+                    printf("您選取的點 %d 與 %d 無法構成一個有效的道路！\n", option, option_2);
+                    continue;
+                }
+                else if (check_if_has_road(players, option, option_2) == 1)
+                {
+                    printf("您選取的道路 %d,%d 已經被佔有！\n", option, option_2);
+                    continue;
+                }
+                else if (check_if_connected_build(players, i, option, option_2) == 0)
+                {
+                    printf("您選取的道路 %d,%d 沒有跟您的其它道路或建築連接！\n", option, option_2);
+                    continue;
+                }
+                // 已確認道路合法
+                printf("您已成功建造道路 %d,%d！\n", option, option_2);
+                for (int m = 0; m < MAX_ROADS; m++)
+                {
+                    if (players[i].road[m][0] == 0 || players[i].road[m][1] == 0)
+                    {
+                        players[i].road[m][0] = option;
+                        players[i].road[m][1] = option_2;
+                        break;
+                    }
+                }
+                refresh(players, *sys);
+                break;
+            }
+            
             continue;
         }
-    usleep(500000);
-        if(players[i].NPC_difficulty == 1){
-            for(int32_t j = 0; j < NUM_TILES; ++j){
-                if(tiles[j].resourceType != Forest && tiles[j].resourceType != Hill){
+        usleep(500000);
+        
+        if (players[i].NPC_difficulty == 1)
+        {
+            for(int32_t j = 0; j < NUM_TILES; ++j)
+            {
+                if (tiles[j].resourceType != Forest && tiles[j].resourceType != Hill)
+                {
                     continue;
                 }
-                if(is_has_built(players, tiles[j].corner_id[5])){
+                if (is_has_built(players, tiles[j].corner_id[5]))
+                {
                     continue;
                 }
-                if(connect_village_limit(players, tiles[j].corner_id[5])){
+                if (connect_village_limit(players, tiles[j].corner_id[5]))
+                {
                     continue;
                 }
                 build_village(players, i, tiles[j].corner_id[5]);
+                
+                // 蓋道路
+                for (int k = 0; k < 3; k++)
+                {
+                    if (connectedPoint[tiles[j].corner_id[5]][k] == 0)
+                    {
+                        continue;
+                    }
+                    else if (check_connected(tiles[j].corner_id[5], connectedPoint[tiles[j].corner_id[5]][k]) == 0)
+                    {
+                        continue;
+                    }
+                    else if (check_if_has_road(players, tiles[j].corner_id[5], connectedPoint[tiles[j].corner_id[5]][k]) == 1)
+                    {
+                        continue;
+                    }
+                    else if (check_if_connected_build(players, i, tiles[j].corner_id[5], connectedPoint[tiles[j].corner_id[5]][k]) == 0)
+                    {
+                        continue;
+                    }
+                    // 已確認道路合法
+                    printf("玩家%d已成功建造道路 %d,%d！\n", i, tiles[j].corner_id[5], connectedPoint[tiles[j].corner_id[5]][k]);
+                    for (int m = 0; m < MAX_ROADS; m++)
+                    {
+                        if (players[i].road[m][0] == 0 || players[i].road[m][1] == 0)
+                        {
+                            players[i].road[m][0] = tiles[j].corner_id[5];
+                            players[i].road[m][1] = connectedPoint[tiles[j].corner_id[5]][k];
+                            break;
+                        }
+                    }
+                    refresh(players, *sys);
+                    break;
+                }
             }
-        } else {
+        }
+        else
+        {
             int32_t random_point = 0;
-            while (1){
+            while (1)
+            {
                 #if WINDOWS
                 random_point = rand() % 54 + 1;
                 #else
                 random_point = arc4random_uniform(54) + 1;
                 #endif
 
-                if(is_has_built(players, random_point)){
+                if (is_has_built(players, random_point))
+                {
                     continue;
                 }
-                if(connect_village_limit(players, random_point)){
+                if (connect_village_limit(players, random_point))
+                {
                     continue;;
                 }
                 break;
             }
             build_village(players, i, random_point);
+            
+            // 蓋道路
+            for (int k = 0; k < 3; k++)
+            {
+                if (connectedPoint[random_point][k] == 0)
+                {
+                    continue;
+                }
+                else if (check_connected(random_point, connectedPoint[random_point][k]) == 0)
+                {
+                    continue;
+                }
+                else if (check_if_has_road(players, random_point, connectedPoint[random_point][k]) == 1)
+                {
+                    continue;
+                }
+                else if (check_if_connected_build(players, i, random_point, connectedPoint[random_point][k]) == 0)
+                {
+                    continue;
+                }
+                // 已確認道路合法
+                printf("玩家%d已成功建造道路 %d,%d！\n", i, random_point, connectedPoint[random_point][k]);
+                for (int m = 0; m < MAX_ROADS; m++)
+                {
+                    if (players[i].road[m][0] == 0 || players[i].road[m][1] == 0)
+                    {
+                        players[i].road[m][0] = random_point;
+                        players[i].road[m][1] = connectedPoint[random_point][k];
+                        break;
+                    }
+                }
+                refresh(players, *sys);
+                break;
+            }
+            return;
         }
     }
 }
