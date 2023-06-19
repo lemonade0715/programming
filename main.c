@@ -87,18 +87,60 @@ int main()
         //
         
         sleep(1);
+        //
+        printf("---------------------\n");
+        printf("<Player %d status>\n", current_player);
+        printf("village: %d %d %d %d %d\n", player_list[current_player].village[0], player_list[current_player].village[1], player_list[current_player].village[2], player_list[current_player].village[3], player_list[current_player].village[4]);
+        printf("city: %d %d %d %d\n", player_list[current_player].city[0], player_list[current_player].city[1], player_list[current_player].city[2], player_list[current_player].city[3]);
+        printf("road: ");
+        for (int road_iterator = 0; road_iterator < 15; road_iterator++)
+        {
+            printf("(%d,%d)", player_list[current_player].road[road_iterator][0], player_list[current_player].road[road_iterator][1]);
+        }
+        printf("\n");
+        printf("resource: %d %d %d %d %d\n", player_list[current_player].resource[0], player_list[current_player].resource[1], player_list[current_player].resource[2], player_list[current_player].resource[3], player_list[current_player].resource[4]);
+        printf("---------------------\n");
+        //
         printf("\n\033[1m【玩家%d - 收成階段】\033[0m\n", current_player);
         production(player_list, current_player);
         game_state = State_Trade;
         refresh(player_list, system_setting);
         
         sleep(1);
+        //
+        printf("---------------------\n");
+        printf("<Player %d status>\n", current_player);
+        printf("village: %d %d %d %d %d\n", player_list[current_player].village[0], player_list[current_player].village[1], player_list[current_player].village[2], player_list[current_player].village[3], player_list[current_player].village[4]);
+        printf("city: %d %d %d %d\n", player_list[current_player].city[0], player_list[current_player].city[1], player_list[current_player].city[2], player_list[current_player].city[3]);
+        printf("road: ");
+        for (int road_iterator = 0; road_iterator < 15; road_iterator++)
+        {
+            printf("(%d,%d)", player_list[current_player].road[road_iterator][0], player_list[current_player].road[road_iterator][1]);
+        }
+        printf("\n");
+        printf("resource: %d %d %d %d %d\n", player_list[current_player].resource[0], player_list[current_player].resource[1], player_list[current_player].resource[2], player_list[current_player].resource[3], player_list[current_player].resource[4]);
+        printf("---------------------\n");
+        //
         printf("\n\033[1m【玩家%d - 交易階段】\033[0m", current_player);
         trade(player_list, current_player);
         game_state = State_Build;
         refresh(player_list, system_setting);
         
         sleep(1);
+        //
+        printf("---------------------\n");
+        printf("<Player %d status>\n", current_player);
+        printf("village: %d %d %d %d %d\n", player_list[current_player].village[0], player_list[current_player].village[1], player_list[current_player].village[2], player_list[current_player].village[3], player_list[current_player].village[4]);
+        printf("city: %d %d %d %d\n", player_list[current_player].city[0], player_list[current_player].city[1], player_list[current_player].city[2], player_list[current_player].city[3]);
+        printf("road: ");
+        for (int road_iterator = 0; road_iterator < 15; road_iterator++)
+        {
+            printf("(%d,%d)", player_list[current_player].road[road_iterator][0], player_list[current_player].road[road_iterator][1]);
+        }
+        printf("\n");
+        printf("resource: %d %d %d %d %d\n", player_list[current_player].resource[0], player_list[current_player].resource[1], player_list[current_player].resource[2], player_list[current_player].resource[3], player_list[current_player].resource[4]);
+        printf("---------------------\n");
+        //
         printf("\n\n\033[1m【玩家%d - 建築階段】\033[0m\n", current_player);
         build(player_list, current_player);
         game_state = State_Production;
