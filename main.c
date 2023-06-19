@@ -90,16 +90,19 @@ int main()
         printf("\n\033[1m【玩家%d - 收成階段】\033[0m\n", current_player);
         production(player_list, current_player);
         game_state = State_Trade;
+        refresh(player_list, system_setting);
         
         sleep(1);
         printf("\n\033[1m【玩家%d - 交易階段】\033[0m", current_player);
         trade(player_list, current_player);
         game_state = State_Build;
+        refresh(player_list, system_setting);
         
         sleep(1);
         printf("\n\n\033[1m【玩家%d - 建築階段】\033[0m\n", current_player);
         build(player_list, current_player);
         game_state = State_Production;
+        refresh(player_list, system_setting);
         
         current_player = (current_player + 1) % system_setting.player_num;
         printf("--------------------------------------------\n");
@@ -126,11 +129,13 @@ int production(Player *player_list, int player)
     if (temp == 7)
     {
         printf("觸發強盜事件！\n");
+        refresh(player_list, system_setting);
         robber(player_list, player);
     }
     else
     {
         printf("即將發放資源！\n");
+        refresh(player_list, system_setting);
         // 資源發放
         for (int i = 0; i < NUM_TILES; i++)
         {
@@ -155,6 +160,7 @@ int production(Player *player_list, int player)
                                 printf("玩家%d的村莊(%d)收穫1個%s！\n", j, player_list[j].village[l], resource_name[tiles[i].resourceType]);
                                 player_list[j].resource[tiles[i].resourceType] += 1;
                                 player_list[j].total_resource += 1;
+                                refresh(player_list, system_setting);
                             }
                         }
                         for (int l = 0; l < MAX_CITIES; l++)
@@ -168,6 +174,7 @@ int production(Player *player_list, int player)
                                 printf("玩家%d的城市(%d)收穫2個%s！\n", j, player_list[j].city[l], resource_name[tiles[i].resourceType]);
                                 player_list[j].resource[tiles[i].resourceType] += 2;
                                 player_list[j].total_resource += 2;
+                                refresh(player_list, system_setting);
                             }
                         }
                     }
@@ -281,6 +288,7 @@ int trade(Player *player_list, int player)
                                 system_setting.bank_resource[option_3 - 1] -= 1;
                                 player_list[player].resource[option_3 - 1] += 1;
                                 player_list[player].total_resource -= 3;
+                                refresh(player_list, system_setting);
                                 printf("\n交易成功！\n");
                                 option_2 = -1;
                                 break;
@@ -410,6 +418,7 @@ int trade(Player *player_list, int player)
                                     system_setting.bank_resource[option_4 - 1] -= 1;
                                     player_list[player].resource[option_4 - 1] += 1;
                                     player_list[player].total_resource -= 2;
+                                    refresh(player_list, system_setting);
                                     break;
                                 }
                             }
@@ -453,6 +462,7 @@ int trade(Player *player_list, int player)
                             system_setting.bank_resource[option_3 - 1] -= 1;
                             player_list[player].resource[option_3 - 1] += 1;
                             player_list[player].total_resource -= 1;
+                            refresh(player_list, system_setting);
                             break;
                         }
                         break;
@@ -529,10 +539,13 @@ int build(Player *player_list, int player)
                     system_setting.bank_develop_card[option_2] -= 1;
                     player_list[player].develop_cards[option_2] += 1;
                     player_list[player].new_develop_card = option_2;
+                    refresh(player_list, system_setting);
                     printf("玩家%d購買了一張發展卡！\n", player);
                     printf("建築階段結束\n");
                     return 0;
                 }
+                
+                printf("(LINE%d)", __LINE__);
             }
         }
         if (option == 3)
@@ -579,6 +592,7 @@ int build(Player *player_list, int player)
                         break;
                     }
                 }
+                refresh(player_list, system_setting);
             }
         }
         if (option == 2)
@@ -665,6 +679,7 @@ int build(Player *player_list, int player)
                             break;
                         }
                         printf("玩家%d建造了村莊%d！\n", player, option_2);
+                        refresh(player_list, system_setting);
                         return 0;
                     }
                 }
@@ -678,7 +693,7 @@ int build(Player *player_list, int player)
             return 0;
         }
         // 檢查道路數量
-        if (player_list[player].num_roads >= MAX_ROADS)
+        if (player_list[player].num_roads >= MAX_ROADS || player_list[player].num_roads == 0)
         {
             printf("建築階段結束\n");
             return 0;
@@ -733,6 +748,7 @@ int build(Player *player_list, int player)
             }
             printf("玩家%d已建造道路 %d,%d！\n", player, road_1, road_2);
             add_road_to_player(player_list, player, road_1, road_2);
+            refresh(player_list, system_setting);
         }
         return 0;
     }
@@ -823,6 +839,7 @@ int build(Player *player_list, int player)
                     player_list[player].resource[1] -= 1;
                     player_list[player].resource[4] -= 1;
                     add_road_to_player(player_list, player, road_1, road_2);
+                    refresh(player_list, system_setting);
                     break;
                 }
                 break;
@@ -942,6 +959,7 @@ int build(Player *player_list, int player)
                     player_list[player].resource[4] -= 1;
                     player_list[player].village[option_2] += 1;
                     player_list[player].total_resource -= 4;
+                    refresh(player_list, system_setting);
                     break;
                 }
             }
@@ -1040,6 +1058,7 @@ int build(Player *player_list, int player)
                         system_setting.bank_resource[0] += 2;
                         system_setting.bank_resource[3] += 3;
                         player_list[player].total_resource -= 5;
+                        refresh(player_list, system_setting);
 
                         printf("您已成功用2個小麥、3個石頭將村莊%d升級為城市！\n", option_2);
                         for (int i = 0; i < MAX_VILLAGES; i++)
@@ -1058,6 +1077,7 @@ int build(Player *player_list, int player)
                                 break;
                             }
                         }
+                        refresh(player_list, system_setting);
                     }
                     break;
                 }
@@ -1112,6 +1132,7 @@ int build(Player *player_list, int player)
                         printf("您已成功以1個小麥、1個羊毛、1個石頭兌換1張分數卡！\n");
                         system_setting.bank_develop_card[option_3] = 0;
                         player_list[player].develop_cards[option_3] = 1;
+                        refresh(player_list, system_setting);
                         break;
                     }
                 }
@@ -1150,6 +1171,7 @@ int robber(Player *player_list, int player)
             }
         }
     }
+    refresh(player_list, system_setting);
     
     // 移動強盜
     int robber_position = -1;
@@ -1208,6 +1230,7 @@ int robber(Player *player_list, int player)
     tiles[robber_position_prev].hasRobber = 0;
     tiles[robber_position].hasRobber = 1;
     printf("強盜已經被玩家%d移動至板塊%d！\n", player, robber_position);
+    refresh(player_list, system_setting);
     
     // 搶奪資源
     int robbable_players[4] = {0};
@@ -1284,6 +1307,7 @@ int robber(Player *player_list, int player)
             }
             break;
         }
+        refresh(player_list, system_setting);
         return 0;
     }
     // 人類玩家
@@ -1324,6 +1348,8 @@ int robber(Player *player_list, int player)
             printf("該位玩家在強盜所在板塊的附近沒有村莊或城市！\n");
             continue;
         }
+        refresh(player_list, system_setting);
+        
         // 搶奪該位玩家的資源卡
         int temp_rob;
         #if WINDOWS
@@ -1347,6 +1373,7 @@ int robber(Player *player_list, int player)
         }
         break;
     }
+    refresh(player_list, system_setting);
     return 0;
 }
 
@@ -1438,6 +1465,7 @@ int use_develop_card(Player *player_list, int player)
                         tiles[robber_position_prev].hasRobber = 0;
                         tiles[robber_position].hasRobber = 1;
                         printf("強盜已經被移動至板塊%d！\n", robber_position);
+                        refresh(player_list, system_setting);
                         
                         // 搶奪資源
                         int robbable_players[4] = {0};
@@ -1562,6 +1590,7 @@ int use_develop_card(Player *player_list, int player)
                                     player_list[player].resource[i] += 1;
                                     player_list[option].total_resource -= 1;
                                     player_list[player].total_resource += 1;
+                                    refresh(player_list, system_setting);
                                     break;
                                 }
                                 temp_rob -= player_list[option].resource[i];
@@ -1600,6 +1629,7 @@ int use_develop_card(Player *player_list, int player)
                             player_list[j].resource[option_2 - 1] = 0;
                             player_list[player].total_resource += player_list[j].resource[option_2 - 1];
                             player_list[j].total_resource = 0;
+                            refresh(player_list, system_setting);
                         }
                     }
                 }
@@ -1668,6 +1698,7 @@ int use_develop_card(Player *player_list, int player)
                                 // option_2 == 1
                                 printf("您已成功建造道路 %d,%d！\n", road_1, road_2);
                                 add_road_to_player(player_list, player, road_1, road_2);
+                                refresh(player_list, system_setting);
                                 break;
                             }
                             break;
@@ -1706,6 +1737,7 @@ int use_develop_card(Player *player_list, int player)
                         player_list[player].resource[option_2 - 1] += 1;
                         player_list[player].total_resource += 1;
                         printf("您已獲得1個%s！\n", resource_name[option_2 - 1]);
+                        refresh(player_list, system_setting);
                         break;
                     }
                     while (1)
@@ -1732,6 +1764,7 @@ int use_develop_card(Player *player_list, int player)
                         player_list[player].resource[option_2 - 1] += 1;
                         player_list[player].total_resource += 1;
                         printf("您已獲得1個%s！\n", resource_name[option_2 - 1]);
+                        refresh(player_list, system_setting);
                         break;
                     }
                 }
@@ -1808,6 +1841,7 @@ int use_develop_card(Player *player_list, int player)
             tiles[robber_position_prev].hasRobber = 0;
             tiles[robber_position].hasRobber = 1;
             printf("強盜已經被移動至板塊%d！\n", robber_position);
+            refresh(player_list, system_setting);
             
             // 搶奪資源
             int robbable_players[4] = {0};
@@ -1838,6 +1872,7 @@ int use_develop_card(Player *player_list, int player)
             if (robbable_players[0] + robbable_players[1] + robbable_players[2] + robbable_players[3] == 0)
             {
                 printf("板塊%d附近沒有村莊或城市！\n", robber_position);
+                refresh(player_list, system_setting);
                 return 0;
             }
             
@@ -1871,6 +1906,7 @@ int use_develop_card(Player *player_list, int player)
                         player_list[player].resource[i] += 1;
                         player_list[option].total_resource -= 1;
                         player_list[player].total_resource += 1;
+                        refresh(player_list, system_setting);
                         break;
                     }
                     temp_rob -= player_list[option].resource[i];
@@ -1898,6 +1934,7 @@ int use_develop_card(Player *player_list, int player)
                 player_list[i].resource[option_2] = 0;
                 player_list[player].total_resource += player_list[i].resource[option_2];
                 player_list[i].total_resource = 0;
+                refresh(player_list, system_setting);
             }
         }
         else if (option == 16 || option == 17) // 道路建設(電腦)
@@ -1940,10 +1977,12 @@ int use_develop_card(Player *player_list, int player)
                 system_setting.bank_resource[option_2] -= 1;
                 player_list[player].resource[option_2] += 1;
                 player_list[player].total_resource += 1;
+                refresh(player_list, system_setting);
                 break;
             }
         }
     }
+    refresh(player_list, system_setting);
     return 0;
 }
 
